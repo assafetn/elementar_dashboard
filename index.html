@@ -6,28 +6,34 @@
   <title>Elementar BI · פורטל מאוחד</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
 
     /* ===== DESIGN SYSTEM TOKENS ===== */
 
     :root {
-      /* Navy palette (Migdal brand) */
-      --navy-50:#F0F4FF;  --navy-100:#DCE5F8; --navy-200:#B7C5EF; --navy-300:#889CE0;
-      --navy-400:#5973CD; --navy-500:#3252B8; --navy-600:#1F3A9E; --navy-700:#142A7A;
-      --navy-800:#0C1D58; --navy-900:#061238;
+      /* ===== Migdal brand core (from official UI kit) ===== */
+      --mig-ink:#020140; --mig-ink-2:#212058; --mig-blue:#3d65e3; --mig-blue-deep:#2a49ad;
+      --mig-green:#a2eb9a; --mig-green-600:#8fe086; --mig-green-700:#74cf6f; --mig-green-soft:#96e6a1;
+      --mig-paper:#fbfbfd; --mig-mist:#f3f6fb; --mig-line-soft:#e2e9f3; --mig-line:#d4ddec;
+      --mig-slate-400:#9aa3bd; --mig-slate-600:#5b658a;
+
+      /* Navy ramp rebased onto Migdal ink→blue→mist (names kept for back-compat) */
+      --navy-50:#f3f6fb;  --navy-100:#e2e9f3; --navy-200:#d4ddec; --navy-300:#9aa3bd;
+      --navy-400:#5b658a; --navy-500:#3d65e3; --navy-600:#2a49ad; --navy-700:#212058;
+      --navy-800:#0a0a52; --navy-900:#020140;
 
       /* Grays */
       --gray-50:#FAFBFC;  --gray-100:#F4F5F7; --gray-200:#E8EAEE; --gray-300:#D4D7DD;
       --gray-400:#A0A4AB; --gray-500:#6E727B; --gray-600:#4D5158; --gray-700:#2D3038;
       --gray-800:#1A1C22; --gray-900:#0E1014;
 
-      /* Semantic */
-      --success-bg:#ECFDF5; --success-fg:#047857; --success-strong:#065F46;
-      --warning-bg:#FFFBEB; --warning-fg:#B45309; --warning-strong:#92400E;
-      --danger-bg:#FEF2F2;  --danger-fg:#B91C1C;  --danger-strong:#991B1B;
-      --info-bg:#EFF6FF;    --info-fg:#1D4ED8;
-      --accent:#C9A961;
+      /* Semantic — Migdal de-saturated status (muted mint / gold / dusty red) */
+      --success-bg:#eef6f1; --success-fg:#3f8568; --success-strong:#2f6650;
+      --warning-bg:#f7f2e6; --warning-fg:#8f7636; --warning-strong:#6f5c28;
+      --danger-bg:#f7ecee;  --danger-fg:#b65058;  --danger-strong:#933f46;
+      --info-bg:#eef2fd;    --info-fg:#3d65e3;
+      --accent:#a2eb9a;
 
       /* Easing */
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -36,7 +42,7 @@
 
     /* Base */
     html, body {
-      font-family: 'Heebo', 'Assistant', Arial, sans-serif;
+      font-family: 'Migdal RagSans', 'Assistant', system-ui, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       background: var(--gray-50);
       color: var(--gray-700);
@@ -59,9 +65,15 @@
     .num { font-variant-numeric: tabular-nums; }
 
     /* Buttons */
-    .btn { display: inline-flex; align-items: center; gap: 8px; font-family: inherit; font-size: 14px; font-weight: 600; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: background 150ms, color 150ms, border-color 150ms; border: 1px solid transparent; white-space: nowrap; }
-    .btn-primary { background: var(--navy-800); color: #fff; }
-    .btn-primary:hover { background: var(--navy-900); }
+    .btn { display: inline-flex; align-items: center; gap: 10px; font-family: inherit; font-size: 14px; font-weight: 700; padding: 11px 22px; border-radius: 999px; cursor: pointer; transition: background 150ms, color 150ms, border-color 150ms, transform 80ms, box-shadow 150ms; border: 1px solid transparent; white-space: nowrap; }
+    .btn:active { transform: translateY(1px); }
+    .btn-dark { background: var(--mig-ink); color: #fff; }
+    .btn-dark:hover { background: var(--mig-blue-deep); }
+    .btn-ghost { background: transparent; color: var(--mig-blue); border: 1.5px solid var(--mig-line); }
+    .btn-ghost:hover { background: var(--mig-mist); }
+    .btn-primary { background: var(--mig-green); color: var(--mig-ink); border-color: transparent; }
+    .btn-primary:hover { background: var(--mig-green-600); }
+    .btn-primary:active { background: var(--mig-green-700); }
     .btn-secondary { background: #fff; color: var(--navy-800); border-color: var(--gray-200); }
     .btn-secondary:hover { background: var(--navy-50); border-color: var(--navy-200); }
     .btn-sm { padding: 8px 14px; font-size: 13px; }
@@ -230,14 +242,14 @@
   /* ===== MANAGEMENT CSS ===== */
 /* Management-specific color aliases — scoped to #managementView */
 #managementView {
-  --bg: var(--gray-50);
+  --bg: var(--mig-paper);
   --card-bg: #ffffff;
-  --text-primary: var(--gray-900);
-  --text-secondary: var(--gray-500);
-  --text-muted: var(--gray-400);
-  --border: var(--gray-200);
-  --primary: var(--navy-700);
-  --primary-light: var(--navy-50);
+  --text-primary: var(--mig-ink);
+  --text-secondary: var(--mig-slate-600);
+  --text-muted: var(--mig-slate-400);
+  --border: var(--mig-line);
+  --primary: var(--mig-ink);
+  --primary-light: var(--mig-mist);
   --primary-fg: #ffffff;
   --success: var(--success-fg);
   --success-light: var(--success-bg);
@@ -248,9 +260,11 @@
   --chart-blue: var(--navy-600);
   --chart-blue-light: var(--navy-200);
   --chart-green: var(--success-fg);
-  --radius: 12px;
-  --shadow-sm: none;
-  --shadow-md: none;
+  --radius: 16px;
+  --shadow-sm: 0 1px 2px rgba(2,1,64,.06), 0 1px 1px rgba(2,1,64,.04);
+  --shadow-md: 0 4px 12px rgba(2,1,64,.08);
+  --shadow-lg: 0 12px 32px rgba(2,1,64,.10);
+  --shadow-focus: 0 0 0 3px rgba(61,101,227,.35);
   --branch-amber: #f59e0b;
   --branch-purple: #8b5cf6;
   --branch-emerald: #10b981;
@@ -542,6 +556,8 @@
 
 /* Card base */
 #managementView .card {
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 160ms var(--ease-out), transform 160ms var(--ease-out);
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -559,7 +575,14 @@
 @media (max-width: 767px) {
   .kpi-grid { grid-template-columns: 1fr; }
 }
-.kpi-card {
+#managementView .kpi-card {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+}
+#managementView .kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
 }
 .kpi-card.highlight-sales {
   border-color: var(--primary);
@@ -576,8 +599,17 @@
 .kpi-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 0.625rem;
+  margin-bottom: 0.625rem;
+}
+/* number now lives in the header row, pushed to the far (left) edge */
+.kpi-header-value {
+  margin-inline-start: auto;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  color: var(--text-primary);
+  white-space: nowrap;
 }
 .kpi-icon {
   width: 40px;
@@ -590,13 +622,14 @@
   color: white;
   flex-shrink: 0;
 }
-.kpi-icon.sales { background: var(--navy-50); color: var(--navy-700); }
-.kpi-icon.profit { background: var(--navy-50); color: var(--navy-700); }
-.kpi-icon.policies { background: var(--navy-50); color: var(--navy-700); }
-.kpi-title { font-weight: 600; font-size: 0.9rem; }
-.kpi-current-label { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.125rem; }
-.kpi-current-value { font-weight: 700; font-size: 2rem; line-height: 1.2; margin-bottom: 0.75rem; color: var(--text-primary); }
-.kpi-details { display: flex; flex-direction: column; gap: 0.375rem; }
+.kpi-icon.sales { background: var(--navy-700); color: white; }
+.kpi-icon.profit { background: var(--navy-700); color: white; }
+.kpi-icon.policies { background: var(--navy-700); color: white; }
+.kpi-title { font-weight: 600; font-size: 0.9rem; line-height: 1.2; }
+.kpi-title-wrap { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kpi-def { font-size: 0.68rem; color: var(--text-muted, #94a3b8); font-weight: 500; line-height: 1.25; white-space: nowrap; }
+.kpi-current-label { color: var(--text-secondary); font-size: 0.75rem; margin-bottom: 0.5rem; }
+.kpi-details { display: flex; flex-direction: column; gap: 0.25rem; }
 .kpi-row {
   display: flex;
   justify-content: space-between;
@@ -660,7 +693,7 @@
   line-height: 1.4;
 }
 .goal-badge.green { background: var(--success-light); color: var(--success); }
-.goal-badge.amber { background: var(--warning-light); color: var(--warning); }
+.goal-badge.amber { background: var(--warning-light); color: var(--warning-strong); }
 .goal-badge.red   { background: var(--danger-light);  color: var(--danger); }
 
 /* Branch Breakdown */
@@ -681,14 +714,26 @@
 .branch-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 .branch-row {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
+  background: var(--card-bg);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: box-shadow 160ms ease, transform 160ms ease;
 }
-.branch-row:hover { }
+/* differentiation: lift the row on hover + when expanded, instead of zebra */
+.branch-row:hover {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+.branch-row:has(.branch-expanded.open) {
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.10);
+}
+/* subtle header tint so each row's header reads as a distinct band */
+.branch-row-header { background: linear-gradient(180deg, rgba(248,250,252,0.6), rgba(255,255,255,0)); }
 .branch-row-header {
   padding: 1rem 1.25rem;
   cursor: pointer;
@@ -708,10 +753,10 @@
 .branch-metrics {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  flex: 1;
-  justify-content: flex-end;
-  flex-wrap: wrap;
+  gap: 0.875rem;
+  margin-inline-start: auto;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 .branch-metric {
   display: flex;
@@ -729,6 +774,116 @@
   transition: transform 200ms;
 }
 .branch-progress-area { padding: 0 1.25rem 0.75rem; }
+/* Branch color identity */
+.branch-name-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+.branch-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* (headline metrics rule consolidated above) */
+.mgmt-kpi-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px 28px;
+  padding: 10px 14px 6px;
+  margin-top: 6px;
+  border-top: 1px solid var(--navy-50, #f1f5f9);
+  direction: ltr;
+}
+.mgmt-kpi-strip .mgmt-kpi-cell {
+  flex: 0 0 auto;
+  min-width: 84px;
+}
+@media (max-width: 900px) {
+  .mgmt-kpi-strip { gap: 10px 18px; }
+}
+.mgmt-kpi-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: start;
+}
+/* Collapsed (branch-level) strip aligns its grid from the left, matching expanded sub strips */
+.branch-row > .mgmt-kpi-strip {
+  direction: ltr;
+}
+.branch-row > .mgmt-kpi-strip .mgmt-kpi-label,
+.branch-row > .mgmt-kpi-strip .mgmt-kpi-plain,
+.branch-row > .mgmt-kpi-strip .goal-badge {
+  direction: rtl;
+}
+.mgmt-kpi-label {
+  font-size: 11px;
+  color: var(--navy-500, #64748b);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mgmt-kpi-cell { min-width: 0; }
+.mgmt-kpi-plain, .mgmt-kpi-cell .goal-badge { font-variant-numeric: tabular-nums; }
+.mgmt-kpi-plain {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy-800, #1e293b);
+}
+.sub-row .mgmt-kpi-strip {
+  padding: 8px 0 2px;
+  margin-top: 6px;
+  border-top: 1px dashed var(--navy-100, #e2e8f0);
+}
+.mgmt-expanded-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--navy-700, #334155);
+  margin: 14px 14px 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mgmt-agent-table {
+  width: 100%;
+  border-collapse: collapse;
+  direction: rtl;
+  font-size: 0.78rem;
+  margin: 0 0 6px;
+}
+.mgmt-agent-table th {
+  text-align: right;
+  font-weight: 600;
+  color: var(--navy-500, #64748b);
+  font-size: 0.72rem;
+  padding: 4px 14px;
+  border-bottom: 1px solid var(--navy-100, #e2e8f0);
+}
+.mgmt-agent-table td {
+  padding: 6px 14px;
+  border-bottom: 1px solid var(--navy-50, #f1f5f9);
+  cursor: pointer;
+}
+.mgmt-agent-table tr:hover td { background: var(--navy-50, #f8fafc); }
+.mgmt-agent-rank {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 6px;
+  font-weight: 700; font-size: 0.7rem;
+}
+.mgmt-agent-rank.top { background: var(--success-light, #d1fae5); color: var(--success-fg, #047857); }
+.mgmt-agent-rank.bottom { background: var(--danger-light, #fee2e2); color: var(--danger-fg, #991B1B); }
+.mgmt-table-divider {
+  padding: 4px 14px; font-size: 0.7rem; font-weight: 700;
+  color: var(--navy-400, #94a3b8); background: var(--navy-50, #f8fafc);
+}
 .branch-progress-bar {
   width: 100%;
   height: 6px;
@@ -1543,7 +1698,6 @@
     <div class="branch-header">
       <span class="branch-title">פילוח לפי ענף</span>
       <div class="branch-filters">
-        <div class="chart-tabs" id="branchMetricTabs"></div>
         <div class="chart-tabs" id="branchViewTabs"></div>
       </div>
     </div>
@@ -1815,6 +1969,7 @@ const mgmtState = {
   endDate: new Date(mgmtToday),
   loading: true,
   activeMetric: 'sales',
+  chartMetric: 'sales',
   expandedBranch: null,
   viewMode: 'products',
   alertsOpen: false
@@ -1859,6 +2014,20 @@ function mgmtToInputDate(d) {
 
 // ==================== GOAL COLOR (TRAFFIC LIGHT) ====================
 // NEW: ≥80% green / 50–79% amber / <50% red (confirmed from screenshot)
+// Traffic-light for "lower is better" KPIs (Loss Ratio, Combined Ratio).
+// val and target in same unit (pp). green <= target, amber <= target+amberBand, else red.
+function mgmtGetInverseColor(val, target, amberBand) {
+  if (val <= target) return 'green';
+  if (val <= target + amberBand) return 'amber';
+  return 'red';
+}
+// Traffic-light for "higher is better" KPIs (Retention). green >= target, amber >= target-amberBand, else red.
+function mgmtGetUpsideColor(val, target, amberBand) {
+  if (val >= target) return 'green';
+  if (val >= target - amberBand) return 'amber';
+  return 'red';
+}
+
 function mgmtGetGoalColor(pct) {
   if (pct >= 80) return 'green';
   if (pct >= 50) return 'amber';
@@ -1957,7 +2126,10 @@ function mgmtGenerateData() {
   const kpis = {
     sales: { value: totalSales, goal: salesGoal, goalPct: salesGoalPct, yoy: salesYoy, prev: salesPrev, hasGoal: true },
     profit: { value: totalProfit, goal: 0, goalPct: 0, yoy: profitYoy, prev: profitPrev, hasGoal: false },
-    policies: { value: totalPolicies, goal: policiesGoal, goalPct: policiesGoalPct, yoy: policiesYoy, prev: policiesPrev, hasGoal: true }
+    policies: { value: totalPolicies, goal: policiesGoal, goalPct: policiesGoalPct, yoy: policiesYoy, prev: policiesPrev, hasGoal: true },
+    lossRatio: { value: 72.4, plan: 70.0, prevYear: 71.1 },
+    combinedRatio: { value: 99.2, plan: 96.0, prevYear: 97.8 },
+    retention: { value: 85.3, plan: 86.0, prevYear: 84.9 }
   };
 
   // NEW: Renewals (חידושים) card data — 59/41 split, fixed YoY ratios per spec
@@ -2064,6 +2236,17 @@ function mgmtGenerateData() {
     const goalPct = gMin + Math.round(branchRng() * (gMax - gMin));
     const polGoalPct = gMin + Math.round(branchRng() * (gMax - gMin));
 
+    // NEW: per-branch profitability KPIs (mock). Tier aligned to bi so colors are deterministic.
+    // bi 0 (רכב)=healthy, 1 (דירות)=watch, 2 (בתי עסק)=healthy, 3 (הנדסי)=stressed.
+    const lrBase   = [70, 78, 71, 86][bi] ?? 75;   // Loss Ratio %
+    const crBase   = [98, 101, 99, 105][bi] ?? 100; // Combined Ratio %
+    const retBase  = [86, 81, 87, 76][bi] ?? 83;    // Retention %
+    const renBase  = [78, 72, 80, 68][bi] ?? 75;    // Renewals (חידושים) rate %
+    const lossRatio     = +(lrBase  + (branchRng() - 0.5) * 3).toFixed(1);
+    const combinedRatio = +(crBase  + (branchRng() - 0.5) * 3).toFixed(1);
+    const retention     = +(retBase + (branchRng() - 0.5) * 3).toFixed(1);
+    const renewalsPct   = +(renBase + (branchRng() - 0.5) * 4).toFixed(1);
+
     const subs = b.subs.map((name, si) => {
       const subRng = mgmtSeededRandom(seed + bi * 1000 + si * 100);
       const subShare = (0.5 + subRng()) / b.subs.length;
@@ -2074,7 +2257,12 @@ function mgmtGenerateData() {
       const subPrev = subVal / (1 + subYoy / 100);
       const subProfPrev = subProfVal / (1 + subYoy / 100);
       const subPolPrev = Math.round(subPolVal / (1 + subYoy / 100));
-      return { name, sales: subVal, profit: subProfVal, policies: subPolVal, yoy: subYoy, salesPrev: subPrev, profitPrev: subProfPrev, policiesPrev: subPolPrev };
+      // NEW: sub-product profitability KPIs — spread around the branch mock so sub rows differ.
+      const subLr  = +(lrBase  + (subRng() - 0.5) * 10).toFixed(1);
+      const subCr  = +(crBase  + (subRng() - 0.5) * 10).toFixed(1);
+      const subRet = +(retBase + (subRng() - 0.5) * 8).toFixed(1);
+      const subRen = +(renBase + (subRng() - 0.5) * 8).toFixed(1);
+      return { name, sales: subVal, profit: subProfVal, policies: subPolVal, yoy: subYoy, salesPrev: subPrev, profitPrev: subProfPrev, policiesPrev: subPolPrev, lossRatio: subLr, combinedRatio: subCr, retention: subRet, renewalsPct: subRen };
     });
 
     // Team data
@@ -2103,6 +2291,7 @@ function mgmtGenerateData() {
       ...b, sales: val, profit: profVal, policies: polVal, salesGoal: branchGoal, policiesGoal: polGoal,
       salesGoalPct: goalPct, policiesGoalPct: polGoalPct, yoy, salesPrev: prevVal,
       profitPrev: prevVal * (profVal / val), policiesPrev: Math.round(polVal / (1 + yoy / 100)),
+      lossRatio, combinedRatio, retention, renewalsPct,
       share, subs, teams
     };
   });
@@ -2126,91 +2315,180 @@ function mgmtRenderKPIs() {
   const { kpis, renewals } = mgmtCurrentData;
   const grid = document.getElementById('kpiGrid');
 
+  // Goal bar: actual progress toward a goal (higher % = better)
+  function buildGoalBar(goalPct) {
+    const fill = Math.min(100, Math.max(0, goalPct));
+    const color = goalPct >= 80 ? 'var(--success)' : goalPct >= 50 ? 'var(--warning)' : 'var(--danger)';
+    return `
+      <div style="margin-top:0.625rem">
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-muted);margin-bottom:0.25rem">
+          <span>התקדמות ליעד</span><span style="font-weight:600;color:${color}">${goalPct}%</span>
+        </div>
+        <div style="height:8px;border-radius:9999px;background:var(--gray-100);overflow:hidden">
+          <div style="width:${fill}%;height:100%;background:${color};border-radius:9999px;transition:width 400ms ease"></div>
+        </div>
+      </div>`;
+  }
+
+  // Plan-marker bar: actual value on a track with a tick at the plan line.
+  // For ratios LOWER is better → red fill when actual is to the worse side of plan.
+  // trackMax scales the bar; tick sits at plan position.
+  function buildPlanBar(actual, plan, trackMax) {
+    const max = trackMax || (Math.max(actual, plan) * 1.3);
+    const fillPct = Math.min(100, (actual / max) * 100);
+    const tickPct = Math.min(100, (plan / max) * 100);
+    const worse = actual > plan;                       // above plan = bad for ratios
+    const color = worse ? 'var(--danger)' : 'var(--success)';
+    return `
+      <div style="margin-top:0.625rem">
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-muted);margin-bottom:0.25rem">
+          <span>בפועל מול יעד</span>
+          <span style="font-weight:600;color:${color}">${actual.toFixed(1)}% / ${plan.toFixed(1)}%</span>
+        </div>
+        <div style="position:relative;height:8px;border-radius:9999px;background:var(--gray-100);overflow:hidden">
+          <div style="width:${fillPct}%;height:100%;background:${color};border-radius:9999px;transition:width 400ms ease"></div>
+        </div>
+        <div style="position:relative;height:0">
+          <div style="position:absolute;top:-9px;right:${tickPct}%;transform:translateX(50%);width:2px;height:10px;background:var(--navy-800)" title="יעד"></div>
+        </div>
+      </div>`;
+  }
+
+  // Profitability ratio card builder (lower = better; variance in pp)
+  // Short Hebrew definitions shown under each KPI card title (keyed by title text)
+  const mgmtKpiDefs = {
+    'סה"כ מכירות': 'סך פרמיות שנמכרו',
+    'כמויות': 'מספר פוליסות חדשות',
+    'שיעור שימור': 'אחוז לקוחות שנשארו',
+    'יחס נזק': 'תביעות חלקי פרמיות',
+    'יחס משולב': 'רווחיות חיתומית כוללת',
+    'חידושים': 'פוליסות שחודשו השנה'
+  };
+  const mgmtDefHtml = (title) => mgmtKpiDefs[title] ? `<span class="kpi-def">${mgmtKpiDefs[title]}</span>` : '';
+
+  function buildRatioCard(key, title, subtitle) {
+    const d = kpis[key];
+    const variance = d.value - d.plan;                 // +pp = worse
+    const vDir = variance > 0 ? '▲' : '▼';
+    const vColor = variance > 0 ? 'var(--danger)' : 'var(--success)';
+    const yoyChange = d.value - d.prevYear;
+    const yoyDir = yoyChange > 0 ? '▲' : '▼';
+    const yoyColor = yoyChange > 0 ? 'var(--danger)' : 'var(--success)';
+    return `
+      <div class="card kpi-card fade-in">
+        <div class="kpi-header">
+          <div class="kpi-icon" style="background:var(--navy-700)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+          </div>
+          <div class="kpi-title-wrap"><span class="kpi-title">${title}</span>${mgmtDefHtml(title)}</div>
+          <span class="kpi-header-value">${d.value.toFixed(1)}%</span>
+        </div>
+        <div class="kpi-details">
+          <div class="kpi-row"><span class="kpi-row-label">יעד (Plan)</span><span class="kpi-row-value">${d.plan.toFixed(1)}%</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">סטייה מהיעד</span><span class="kpi-row-value" style="color:${vColor}">${vDir}${Math.abs(variance).toFixed(1)}%</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">מול אשתקד</span><span class="kpi-row-value" style="color:${yoyColor}">${yoyDir}${Math.abs(yoyChange).toFixed(1)}%</span></div>
+        </div>
+        ${buildPlanBar(d.value, d.plan, 110)}
+      </div>
+    `;
+  }
+
   // Builder for the two standard KPI cards (sales + policies)
   function buildKpiCard(key, title, icon, iconClass, highlight) {
     const d = kpis[key];
     const isCurrency = key === 'sales';
     const fmt = isCurrency ? mgmtFormatCurrency : mgmtFormatNumber;
-    const yoyDir = d.yoy >= 0 ? '↗' : '↘';
+    const yoyDir = d.yoy >= 0 ? '▲' : '▼';
     const yoyColor = d.yoy >= 0 ? 'green' : 'red';
     const goalColor = mgmtGetGoalColor(d.goalPct);
     const isHighlighted = mgmtState.activeMetric === key;
+    const iconSvg = key === 'sales'
+      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'
+      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
     return `
       <div class="card kpi-card fade-in ${isHighlighted ? highlight : ''}" data-metric="${key}">
         <div class="kpi-header">
-          <div class="kpi-icon ${iconClass}">${icon}</div>
-          <span class="kpi-title">${title}</span>
+          <div class="kpi-icon" style="background:var(--navy-700)">${iconSvg}</div>
+          <div class="kpi-title-wrap"><span class="kpi-title">${title}</span>${mgmtDefHtml(title)}</div>
+          <span class="kpi-header-value">${fmt(d.value)}</span>
         </div>
-        <div class="kpi-current-label">נוכחי</div>
-        <div class="kpi-current-value">${fmt(d.value)}</div>
         <div class="kpi-details">
-          <div class="kpi-row"><span class="kpi-row-label">יעד</span><span class="kpi-row-value">${fmt(d.goal)}</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">יעד (Plan)</span><span class="kpi-row-value">${fmt(d.goal)}</span></div>
           <div class="kpi-row"><span class="kpi-row-label">אחוז עמידה ביעד</span><span class="kpi-row-value ${goalColor}">${d.goalPct}%</span></div>
           <div class="kpi-row"><span class="kpi-row-label">מול אשתקד</span><span class="kpi-row-value ${yoyColor}">${yoyDir}${Math.abs(d.yoy).toFixed(0)}%</span></div>
-          <div class="kpi-row"><span class="kpi-row-label">תקופה מקבילה אשתקד</span><span class="kpi-row-value">${fmt(d.prev)}</span></div>
         </div>
+        ${d.hasGoal ? buildGoalBar(d.goalPct) : ''}
       </div>
     `;
   }
 
+  // Retention card — percentage, higher = better, with goal bar
+  function buildRetentionCard() {
+    const d = kpis.retention;
+    const goalPct = Math.round((d.value / d.plan) * 100);
+    const goalColor = mgmtGetGoalColor(goalPct);
+    const yoyChange = d.value - d.prevYear;
+    const yoyDir = yoyChange >= 0 ? '▲' : '▼';
+    const yoyColor = yoyChange >= 0 ? 'green' : 'red';
+    return `
+      <div class="card kpi-card fade-in">
+        <div class="kpi-header">
+          <div class="kpi-icon" style="background:var(--navy-700)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div class="kpi-title-wrap"><span class="kpi-title">שיעור שימור</span>${mgmtDefHtml('שיעור שימור')}</div>
+          <span class="kpi-header-value">${d.value.toFixed(1)}%</span>
+        </div>
+        <div class="kpi-details">
+          <div class="kpi-row"><span class="kpi-row-label">יעד (Plan)</span><span class="kpi-row-value">${d.plan.toFixed(1)}%</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">אחוז עמידה ביעד</span><span class="kpi-row-value ${goalColor}">${goalPct}%</span></div>
+          <div class="kpi-row"><span class="kpi-row-label">מול אשתקד</span><span class="kpi-row-value ${yoyColor}">${yoyDir}${Math.abs(yoyChange).toFixed(1)}%</span></div>
+        </div>
+        ${buildGoalBar(goalPct)}
+      </div>`;
+  }
+
   // NEW: חידושים card — never highlighted, no goal/target
-  const renewedYoyDir = renewals.renewedYoy >= 0 ? '↗' : '↘';
+  const renewedYoyDir = renewals.renewedYoy >= 0 ? '▲' : '▼';
   const renewedYoyColor = renewals.renewedYoy >= 0 ? 'var(--success)' : 'var(--danger)';
-  const newYoyDir = renewals.newYoy >= 0 ? '↗' : '↘';
+  const newYoyDir = renewals.newYoy >= 0 ? '▲' : '▼';
   const newYoyColor = renewals.newYoy >= 0 ? 'var(--success)' : 'var(--danger)';
   const renewalsCard = `
     <div class="card kpi-card fade-in">
       <div class="kpi-header">
-        <div class="kpi-icon" style="background:var(--navy-50)">
+        <div class="kpi-icon" style="background:var(--navy-700)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
           </svg>
         </div>
-        <span class="kpi-title">חידושים</span>
+        <div class="kpi-title-wrap"><span class="kpi-title">חידושים</span>${mgmtDefHtml('חידושים')}</div>
+        <span class="kpi-header-value">${mgmtFormatNumber(renewals.renewed)}</span>
       </div>
-      <div style="display:flex;gap:1rem;margin-bottom:0.625rem">
-        <div style="flex:1;min-width:0">
-          <div class="kpi-current-label">מחודשות</div>
-          <div style="font-weight:700;font-size:1.6rem;line-height:1.2;color:var(--text-primary)">${mgmtFormatNumber(renewals.renewed)}</div>
-          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.125rem">(${renewals.renewedPct}% מהכמויות)</div>
+      <div class="kpi-details">
+        <div class="kpi-row"><span class="kpi-row-label">חדשות (${renewals.newPct}%)</span><span class="kpi-row-value">${mgmtFormatNumber(renewals.newPolicies)}</span></div>
+        <div class="kpi-row"><span class="kpi-row-label">מול אשתקד (מחודשות)</span><span class="kpi-row-value" style="color:${renewedYoyColor}">${renewedYoyDir}${Math.abs(renewals.renewedYoy).toFixed(1)}%</span></div>
+        <div class="kpi-row"><span class="kpi-row-label">מול אשתקד (חדשות)</span><span class="kpi-row-value" style="color:${newYoyColor}">${newYoyDir}${Math.abs(renewals.newYoy).toFixed(1)}%</span></div>
+      </div>
+      <div style="margin-top:0.625rem">
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-muted);margin-bottom:0.25rem">
+          <span style="display:flex;align-items:center;gap:0.25rem"><span style="width:8px;height:8px;border-radius:50%;background:var(--warning);display:inline-block"></span>חדשות ${renewals.newPct}%</span>
+          <span style="display:flex;align-items:center;gap:0.25rem">מחודשות ${renewals.renewedPct}%<span style="width:8px;height:8px;border-radius:50%;background:var(--primary);display:inline-block"></span></span>
         </div>
-        <div style="flex:1;min-width:0">
-          <div class="kpi-current-label">חדשות</div>
-          <div style="font-weight:700;font-size:1.6rem;line-height:1.2;color:var(--text-primary)">${mgmtFormatNumber(renewals.newPolicies)}</div>
-          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:0.125rem">(${renewals.newPct}% מהכמויות)</div>
-        </div>
-      </div>
-      <div style="height:10px;border-radius:9999px;overflow:hidden;display:flex;width:100%;margin-bottom:0.375rem">
-        <div style="width:${renewals.renewedPct}%;background:var(--primary)"></div>
-        <div style="flex:1;background:var(--warning)"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:0.625rem;font-size:0.75rem;color:var(--text-secondary)">
-        <div style="display:flex;align-items:center;gap:0.25rem"><span style="width:8px;height:8px;border-radius:50%;background:var(--warning);display:inline-block"></span>חדשות</div>
-        <div style="display:flex;align-items:center;gap:0.25rem"><span style="width:8px;height:8px;border-radius:50%;background:var(--primary);display:inline-block"></span>מחודשות</div>
-      </div>
-      <div style="border-top:1px solid var(--border);padding-top:0.5rem">
-        <div style="display:grid;grid-template-columns:max-content 1fr 1fr 1fr;gap:0.25rem 0.5rem;font-size:0.77rem;align-items:center;text-align:center">
-          <div></div>
-          <div style="color:var(--text-muted)">נוכחי</div>
-          <div style="color:var(--text-muted)">אשתקד</div>
-          <div style="color:var(--text-muted)">שינוי</div>
-          <div style="color:var(--text-secondary);font-weight:500;text-align:right">מחודשות</div>
-          <div style="font-weight:600">${mgmtFormatNumber(renewals.renewed)}</div>
-          <div>${mgmtFormatNumber(renewals.renewedPrev)}</div>
-          <div style="font-weight:600;color:${renewedYoyColor}">${renewedYoyDir}${Math.abs(renewals.renewedYoy).toFixed(1)}%</div>
-          <div style="color:var(--text-secondary);font-weight:500;text-align:right">חדשות</div>
-          <div style="font-weight:600">${mgmtFormatNumber(renewals.newPolicies)}</div>
-          <div>${mgmtFormatNumber(renewals.newPrev)}</div>
-          <div style="font-weight:600;color:${newYoyColor}">${newYoyDir}${Math.abs(renewals.newYoy).toFixed(1)}%</div>
+        <div style="height:8px;border-radius:9999px;overflow:hidden;display:flex;width:100%">
+          <div style="width:${renewals.renewedPct}%;background:var(--primary)"></div>
+          <div style="flex:1;background:var(--warning)"></div>
         </div>
       </div>
     </div>
   `;
 
   grid.innerHTML = buildKpiCard('sales', 'סה"כ מכירות', '$', 'sales', 'highlight-sales') +
-                   renewalsCard +
-                   buildKpiCard('policies', 'כמויות', '#', 'policies', 'highlight-policies');
+                   buildRetentionCard() +
+                   buildKpiCard('policies', 'כמויות', '#', 'policies', 'highlight-policies') +
+                   buildRatioCard('lossRatio', 'יחס נזק', 'Loss Ratio · נוכחי') +
+                   buildRatioCard('combinedRatio', 'יחס משולב', 'Combined Ratio · נוכחי') +
+                   renewalsCard;
 }
 
 function mgmtExternalTooltipHandler(context) {
@@ -2248,9 +2526,46 @@ function mgmtExternalTooltipHandler(context) {
   tooltipEl.classList.add('visible');
 }
 
+// ===== Ratio-by-branch mock data (12 months, point-in-time) =====
+function mgmtBuildRatioByBranch(metricKey) {
+  // metricKey: 'lossRatio' | 'combinedRatio'
+  const now = new Date();
+  const labels = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    labels.push(shortMonths[d.getMonth()]);
+  }
+  // Baselines per branch — combinedRatio sits ~27pp above lossRatio (expense load)
+  const lossBaselines = { 'רכב': 73, 'דירות': 66, 'בתי עסק': 77, 'הנדסי': 80 };
+  const seedBase = metricKey === 'combinedRatio' ? 9100 : 4200;
+  const series = branches.map((b, bi) => {
+    const lr = lossBaselines[b.name] != null ? lossBaselines[b.name] : 72;
+    const base = metricKey === 'combinedRatio' ? lr + 27 : lr;
+    const rng = mgmtSeededRandom(seedBase + bi * 100);
+    const data = labels.map((_, mi) => {
+      const drift = Math.sin((mi + bi) * 0.6) * 3.5;
+      const noise = (rng() - 0.5) * 2.5;
+      return Math.round((base + drift + noise) * 10) / 10;
+    });
+    return { name: b.name, color: b.colorHex, data };
+  });
+  // Reference lines per metric
+  const refs = metricKey === 'combinedRatio'
+    ? { plan: 96, danger: 100, yMin: 80, yMax: 115 }
+    : { plan: 70, danger: 75, yMin: 55, yMax: 95 };
+  return { labels, series, refs };
+}
+
 function mgmtRenderChart() {
+  const metric = mgmtState.chartMetric || mgmtState.activeMetric;
+  // Ratio metrics use a dedicated branch-line renderer
+  if (metric === 'lossRatio' || metric === 'combinedRatio') {
+    mgmtRenderRatioChart(metric);
+    return;
+  }
+  if (metric === 'retention') { mgmtRenderRetentionChart(); return; }
+  if (metric === 'renewals')  { mgmtRenderRenewalsChart();  return; }
   const { trendData } = mgmtCurrentData;
-  const metric = mgmtState.activeMetric;
   const metricKey = metric === 'policies' ? 'policies' : 'sales';
   const data = trendData[metricKey];
   const days = trendData.days;
@@ -2378,18 +2693,183 @@ function mgmtRenderChart() {
   });
 }
 
+function mgmtRenderRatioChart(metricKey) {
+  const { labels, series, refs } = mgmtBuildRatioByBranch(metricKey);
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  if (mgmtChartInstance) { try { mgmtChartInstance.destroy(); } catch(e){} mgmtChartInstance = null; }
+
+  const branchDatasets = series.map(s => ({
+    label: s.name, data: s.data, borderColor: s.color, backgroundColor: 'transparent',
+    fill: false, tension: 0.35, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5,
+    pointBackgroundColor: s.color, order: 1
+  }));
+  branchDatasets.push({
+    label: 'יעד', data: labels.map(() => refs.plan), borderColor: '#0C1D58',
+    borderDash: [6,4], fill: false, tension: 0, borderWidth: 1.5, pointRadius: 0,
+    pointHoverRadius: 0, order: 2
+  });
+  branchDatasets.push({
+    label: 'סף סיכון', data: labels.map(() => refs.danger), borderColor: '#B91C1C',
+    borderDash: [6,4], fill: false, tension: 0, borderWidth: 1.5, pointRadius: 0,
+    pointHoverRadius: 0, order: 3
+  });
+
+  // Custom legend (branches + reference lines)
+  const legendEl = document.querySelector('#chartSection .chart-legend');
+  if (legendEl) {
+    legendEl.innerHTML =
+      series.map(s => `<div class="legend-item"><span class="legend-dot" style="background:${s.color}"></span> ${s.name}</div>`).join('') +
+      `<div class="legend-item"><span class="legend-dot" style="background:#0C1D58"></span> יעד (${refs.plan}%)</div>` +
+      `<div class="legend-item"><span class="legend-dot" style="background:#B91C1C"></span> סף סיכון (${refs.danger}%)</div>`;
+  }
+
+  mgmtChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: branchDatasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          enabled: true, external: null, rtl: true,
+          callbacks: { label: (c) => `${c.dataset.label}: ${Number(c.parsed.y).toFixed(1)}%` }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 }, maxRotation: 0 } },
+        y: { min: refs.yMin, max: refs.yMax, grid: { color: '#f0f0f0' },
+          ticks: { font: { family: 'Heebo', size: 11 }, callback: (v) => v + '%' } }
+      }
+    }
+  });
+}
+
+// ===== Retention — single portfolio line, 12 months, point-in-time =====
+function mgmtRenderRetentionChart() {
+  const now = new Date();
+  const labels = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    labels.push(shortMonths[d.getMonth()]);
+  }
+  const PLAN = 86;
+  const rng = mgmtSeededRandom(7700);
+  const data = labels.map((_, mi) => {
+    const drift = Math.sin(mi * 0.5) * 2.2;
+    const noise = (rng() - 0.5) * 1.6;
+    return Math.round((85.3 + drift + noise) * 10) / 10;
+  });
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  if (mgmtChartInstance) { try { mgmtChartInstance.destroy(); } catch(e){} mgmtChartInstance = null; }
+
+  const legendEl = document.querySelector('#chartSection .chart-legend');
+  if (legendEl) {
+    legendEl.innerHTML =
+      `<div class="legend-item"><span class="legend-dot" style="background:#1F3A9E"></span> שיעור שימור</div>` +
+      `<div class="legend-item"><span class="legend-dot" style="background:#0C1D58"></span> יעד (${PLAN}%)</div>`;
+  }
+
+  mgmtChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'שיעור שימור', data, borderColor: '#1F3A9E', backgroundColor: 'rgba(31,58,158,0.08)',
+        fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, pointBackgroundColor: '#1F3A9E', order: 1 },
+      { label: 'יעד', data: labels.map(() => PLAN), borderColor: '#0C1D58', borderDash: [6,4],
+        fill: false, tension: 0, borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 0, order: 2 }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false },
+        tooltip: { enabled: true, external: null, rtl: true,
+          callbacks: { label: (c) => `${c.dataset.label}: ${Number(c.parsed.y).toFixed(1)}%` } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 }, maxRotation: 0 } },
+        y: { min: 78, max: 92, grid: { color: '#f0f0f0' },
+          ticks: { font: { family: 'Heebo', size: 11 }, callback: (v) => v + '%' } }
+      }
+    }
+  });
+}
+
+// ===== Renewals — stacked area: מחודשות + חדשות, 12 months (policy counts) =====
+function mgmtRenderRenewalsChart() {
+  const now = new Date();
+  const labels = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    labels.push(shortMonths[d.getMonth()]);
+  }
+  const rng = mgmtSeededRandom(8800);
+  const renewed = [], fresh = [];
+  labels.forEach((_, mi) => {
+    const monthlyTotal = 1300 + Math.sin(mi * 0.55) * 180 + (rng() - 0.5) * 120;
+    const renewedShare = 0.59 + Math.sin(mi * 0.4) * 0.03;
+    const r = Math.round(monthlyTotal * renewedShare);
+    const f = Math.round(monthlyTotal - r);
+    renewed.push(r); fresh.push(f);
+  });
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  if (mgmtChartInstance) { try { mgmtChartInstance.destroy(); } catch(e){} mgmtChartInstance = null; }
+
+  const legendEl = document.querySelector('#chartSection .chart-legend');
+  if (legendEl) {
+    legendEl.innerHTML =
+      `<div class="legend-item"><span class="legend-dot" style="background:#1F3A9E"></span> מחודשות</div>` +
+      `<div class="legend-item"><span class="legend-dot" style="background:#B45309"></span> חדשות</div>`;
+  }
+
+  mgmtChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'מחודשות', data: renewed, borderColor: '#1F3A9E', backgroundColor: 'rgba(31,58,158,0.35)',
+        fill: true, tension: 0.35, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, order: 1 },
+      { label: 'חדשות', data: fresh, borderColor: '#B45309', backgroundColor: 'rgba(180,83,9,0.35)',
+        fill: true, tension: 0.35, borderWidth: 2, pointRadius: 0, pointHoverRadius: 5, order: 2 }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false },
+        tooltip: { enabled: true, external: null, rtl: true,
+          callbacks: { label: (c) => `${c.dataset.label}: ${mgmtFormatNumber(c.parsed.y)}` } } },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 }, maxRotation: 0 } },
+        y: { stacked: true, grid: { color: '#f0f0f0' },
+          ticks: { font: { family: 'Heebo', size: 11 }, callback: (v) => mgmtFormatNumber(v) } }
+      }
+    }
+  });
+}
+
 function mgmtRenderMetricTabs(containerId, activeMetric, onChange) {
   const container = document.getElementById(containerId);
-  // UPDATED: removed רווחיות tab
-  const tabs = [
+  if (!container) return; // branchMetricTabs removed — chartTabs still renders
+  // branchMetricTabs stays volume-only; chartTabs also gets ratio tabs
+  const baseTabs = [
     { key: 'sales', label: 'מכירות' },
     { key: 'policies', label: 'כמויות' }
   ];
+  const tabs = (containerId === 'chartTabs')
+    ? baseTabs.concat([
+        { key: 'retention', label: 'שימור' },
+        { key: 'lossRatio', label: 'יחס נזק' },
+        { key: 'combinedRatio', label: 'יחס משולב' },
+        { key: 'renewals', label: 'חידושים' }
+      ])
+    : baseTabs;
   container.innerHTML = tabs.map(t =>
     `<button class="pill-primary ${activeMetric === t.key ? 'active' : ''}" data-metric="${t.key}">${t.label}</button>`
   ).join('');
   container.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => onChange(btn.dataset.metric));
+    btn.addEventListener('click', () => {
+      if (containerId === 'chartTabs') {
+        mgmtSetChartMetric(btn.dataset.metric);
+      } else {
+        onChange(btn.dataset.metric);
+      }
+    });
   });
 }
 
@@ -2413,7 +2893,9 @@ function mgmtRenderViewTabs() {
 
 function mgmtSetActiveMetric(metric) {
   mgmtState.activeMetric = metric;
-  mgmtRenderMetricTabs('chartTabs', metric, mgmtSetActiveMetric);
+  // Volume selection also drives the chart (keeps chart + breakdown in sync for volume)
+  mgmtState.chartMetric = metric;
+  mgmtRenderMetricTabs('chartTabs', mgmtState.chartMetric, mgmtSetActiveMetric);
   mgmtRenderMetricTabs('branchMetricTabs', metric, mgmtSetActiveMetric);
   mgmtRenderViewTabs();
   mgmtRenderKPIs();
@@ -2421,9 +2903,43 @@ function mgmtSetActiveMetric(metric) {
   mgmtRenderBranches();
 }
 
+// Chart-only metric setter — ratio tabs change ONLY the chart
+function mgmtSetChartMetric(metric) {
+  mgmtState.chartMetric = metric;
+  mgmtRenderMetricTabs('chartTabs', metric, mgmtSetActiveMetric);
+  mgmtRenderChart();
+  // If a volume metric was picked from the chart tabs, also sync the breakdown
+  if (metric === 'sales' || metric === 'policies') {
+    mgmtState.activeMetric = metric;
+    mgmtRenderMetricTabs('branchMetricTabs', metric, mgmtSetActiveMetric);
+    mgmtRenderKPIs();
+    mgmtRenderBranches();
+  }
+}
+
+function mgmtBuildKpiStrip(o) {
+  // Order + labels mirror the top 6 KPI cards (RTL: right → left)
+  const lrColor  = mgmtGetInverseColor(o.lossRatio, 75, 5);      // יחס נזק (lower better)
+  const crColor  = mgmtGetInverseColor(o.combinedRatio, 100, 3); // יחס משולב (lower better)
+  const retColor = mgmtGetUpsideColor(o.retention, 85, 5);       // שימור (higher better)
+  const renColor = mgmtGetUpsideColor(o.renewalsPct ?? 0, 75, 5);// חידושים (higher better)
+  const badge = (label, value, color) =>
+    `<div class="mgmt-kpi-cell"><span class="mgmt-kpi-label">${label}</span><span class="goal-badge ${color}">${value}</span></div>`;
+  const plain = (label, value) =>
+    `<div class="mgmt-kpi-cell"><span class="mgmt-kpi-label">${label}</span><span class="mgmt-kpi-plain">${value}</span></div>`;
+  return `<div class="mgmt-kpi-strip">
+    ${plain('מכירות', mgmtFormatCurrency(o.sales))}
+    ${plain('כמויות', mgmtFormatNumber(o.policies))}
+    ${badge('שימור', o.retention + '%', retColor)}
+    ${badge('יחס נזק', o.lossRatio + '%', lrColor)}
+    ${badge('יחס משולב', o.combinedRatio + '%', crColor)}
+    ${badge('חידושים', (o.renewalsPct ?? 0) + '%', renColor)}
+  </div>`;
+}
+
 function mgmtRenderBranches() {
   const { branchData } = mgmtCurrentData;
-  const metric = mgmtState.activeMetric;
+  const metric = 'sales'; // breakdown always headlines פרמיה; volume toggle removed
   const list = document.getElementById('branchList');
 
   const maxVal = Math.max(...branchData.map(b => {
@@ -2440,7 +2956,7 @@ function mgmtRenderBranches() {
     const barWidth = Math.round((val / maxVal) * 100);
 
     const yoy = b.yoy;
-    const yoyDir = yoy >= 0 ? '↗' : '↘';
+    const yoyDir = yoy >= 0 ? '▲' : '▼';
     const yoyColor = yoy >= 0 ? 'green' : 'red';
     const prevVal = metric === 'sales' ? b.salesPrev : metric === 'profit' ? b.profitPrev : b.policiesPrev;
 
@@ -2473,6 +2989,7 @@ function mgmtRenderBranches() {
                 <span class="sub-metric" style="${sYoyColor}">${sYoyDir}${Math.abs(s.yoy).toFixed(0)}%</span>
                 <span class="sub-metric"><span class="branch-metric-label">אשתקד:</span><span class="sub-metric-value">${fmt(sPrev)}</span></span>
               </div>
+              ${mgmtBuildKpiStrip(s)}
             </div>
           `;
         }).join('');
@@ -2508,11 +3025,14 @@ function mgmtRenderBranches() {
         <div class="branch-row-header" onclick="mgmtToggleBranch(${bi})">
           <div class="branch-row-top">
             <div class="branch-icon" style="background:linear-gradient(135deg, ${b.colorHex}, ${b.gradientEnd})">${b.iconSvg}</div>
-            <span class="branch-name">${b.name}</span>
+            <div class="branch-name-wrap">
+              <span class="branch-name">${b.name}</span>
+              <span class="branch-name-pill" style="background:${b.colorHex}">${Math.round(b.share * 100)}% מהתיק</span>
+            </div>
             <div class="branch-metrics">
-              <span class="branch-metric"><span class="branch-metric-value">${fmt(val)}</span></span>
+              <span class="branch-metric"><span class="branch-metric-label">מכירות:</span><span class="branch-metric-value">${fmt(val)}</span></span>
               ${goalHtml}
-              <span class="branch-metric" style="color:var(--${yoyColor === 'green' ? 'success' : 'danger'})">${yoyDir}${Math.abs(yoy).toFixed(0)}%</span>
+              <span class="branch-metric"><span class="branch-metric-label">מול אשתקד:</span><span class="branch-metric-value" style="color:var(--${yoyColor === 'green' ? 'success' : 'danger'})">${yoyDir}${Math.abs(yoy).toFixed(0)}%</span></span>
               <span class="branch-metric"><span class="branch-metric-label">אשתקד:</span><span class="branch-metric-value">${fmt(prevVal)}</span></span>
             </div>
             <span class="branch-chevron">${isExpanded ? '▾' : '◂'}</span>
@@ -2520,40 +3040,51 @@ function mgmtRenderBranches() {
         </div>
         <div class="branch-progress-area">
           <div class="branch-progress-bar"><div class="branch-progress-fill" style="width:${barWidth}%;background:linear-gradient(90deg, ${progressFillColor}, ${progressFillColor})"></div></div>
-          <div class="branch-share">${Math.round(b.share * 100)}% מסה"כ</div>
         </div>
+        ${mgmtBuildKpiStrip(b)}
         <div class="branch-expanded ${isExpanded ? 'open' : ''}">
-          ${isExpanded ? `<div class="branch-expanded-inner">${subsHtml}</div>
-          <div class="mgmt-agent-drill">
-            <div class="mgmt-drill-label">סוכנים בענף זה</div>
-            <div class="mgmt-drill-list">
-              ${mgmtGetAgentsForBranch(b.name).map(a => `
-                <div class="mgmt-drill-row" onclick="mgmtDrillToAgent(${a.id})">
-                  <div class="mgmt-drill-avatar">${a.initials}</div>
-                  <div class="mgmt-drill-info">
-                    <div class="mgmt-drill-name">${a.name}</div>
-                    <div class="mgmt-drill-agency">${a.agency ? a.agency.name || a.agency : ""}</div>
-                  </div>
-                  <div class="mgmt-drill-score">
-                    <span class="agnt-score-pill ${agntScoreColor(a.score)}">${a.score}</span>
-                  </div>
-                  <div class="mgmt-drill-meta">
-                    <div class="mgmt-drill-sales">${agntFormatCurrency(a.salesYTD)}</div>
-                    <div class="mgmt-drill-goal ${agntGoalColor(a.salesGoalPct)}">${a.salesGoalPct}% יעד</div>
-                  </div>
-                  <div class="mgmt-drill-arrow">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path d="M9 7H3M5 4l-3 3 3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>` : ''}
+          ${isExpanded ? `
+          <div class="mgmt-expanded-section-title">${mgmtState.viewMode === 'products' ? 'תת-ענפים' : 'צוותי מכירה'}</div>
+          <div class="branch-expanded-inner">${subsHtml}</div>
+          <div class="mgmt-expanded-section-title">סוכנים — מובילים מול תחתית</div>
+          ${mgmtBuildAgentTable(b.name)}
+          ` : ''}
         </div>
       </div>
     `;
   }).join('');
+}
+
+// Builds a top-3 / bottom-3 agent table for a branch, ranked by goal%.
+function mgmtBuildAgentTable(branchName) {
+  const agents = mgmtGetAgentsForBranch(branchName)
+    .slice()
+    .sort((a, b) => b.salesGoalPct - a.salesGoalPct);
+  if (!agents.length) return '';
+  const top = agents.slice(0, 3);
+  const bottom = agents.slice(-3).reverse();
+  const row = (a, rank, kind) => `
+    <tr onclick="mgmtDrillToAgent(${a.id})">
+      <td><span class="mgmt-agent-rank ${kind}">${rank}</span></td>
+      <td>${a.name}</td>
+      <td style="color:var(--navy-500)">${a.agency ? (a.agency.name || a.agency) : ''}</td>
+      <td>${agntFormatCurrency(a.salesYTD)}</td>
+      <td><span class="goal-badge ${agntGoalColor(a.salesGoalPct)}">${a.salesGoalPct}%</span></td>
+    </tr>`;
+  const topRows = top.map((a, i) => row(a, i + 1, 'top')).join('');
+  const botRows = bottom.map((a, i) => row(a, i + 1, 'bottom')).join('');
+  return `
+    <table class="mgmt-agent-table">
+      <thead>
+        <tr><th></th><th>סוכן</th><th>סוכנות</th><th>מכירות</th><th>% יעד</th></tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5" class="mgmt-table-divider">▲ 3 המובילים</td></tr>
+        ${topRows}
+        <tr><td colspan="5" class="mgmt-table-divider">▼ 3 בתחתית</td></tr>
+        ${botRows}
+      </tbody>
+    </table>`;
 }
 
 function mgmtToggleBranch(index) {
@@ -2663,7 +3194,6 @@ function mgmtHideSkeleton() {
       <div class="branch-header">
         <span class="branch-title">פילוח לפי ענף</span>
         <div class="branch-filters">
-          <div class="chart-tabs" id="branchMetricTabs"></div>
           <div class="chart-tabs" id="branchViewTabs"></div>
         </div>
       </div>
