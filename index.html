@@ -568,13 +568,157 @@
 /* KPI Cards */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-top: 1rem;
 }
 @media (max-width: 767px) {
-  .kpi-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* === Segment cards horizontal RTL carousel ===
+   The 8 cards scroll horizontally (right→left in RTL); ~4–5 show at once. The wrapper
+   carries fade edges; the scroller carries snap + a thin styled scrollbar. Vertical padding
+   gives the seg-card-active ring/lift room so overflow-x clipping doesn't shave it. */
+#managementView .kpi-carousel-wrap { position: relative; margin-top: 1rem; }
+#managementView .kpi-carousel {
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 2px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mig-line, #d4ddec) transparent;
+}
+#managementView .kpi-carousel::-webkit-scrollbar { height: 8px; }
+#managementView .kpi-carousel::-webkit-scrollbar-track { background: transparent; }
+#managementView .kpi-carousel::-webkit-scrollbar-thumb { background: var(--mig-line, #d4ddec); border-radius: 999px; }
+#managementView .kpi-carousel::-webkit-scrollbar-thumb:hover { background: var(--mig-slate-400, #9aa3bd); }
+/* Override the grid layout → single horizontal flex track when inside the carousel */
+#managementView .kpi-carousel .kpi-grid { display: flex; grid-template-columns: none; gap: 1rem; margin-top: 0; }
+#managementView .kpi-carousel .seg-card { flex: 0 0 230px; scroll-snap-align: start; }
+/* Fade edges signalling more cards on either side (RTL: right = start) */
+#managementView .kpi-carousel-wrap::before,
+#managementView .kpi-carousel-wrap::after {
+  content: ""; position: absolute; top: 0; bottom: 12px; width: 32px; z-index: 4; pointer-events: none;
+}
+#managementView .kpi-carousel-wrap::before { right: 0; background: linear-gradient(to left,  var(--mig-paper, #fbfbfd), rgba(251,251,253,0)); }
+#managementView .kpi-carousel-wrap::after  { left: 0;  background: linear-gradient(to right, var(--mig-paper, #fbfbfd), rgba(251,251,253,0)); }
+@media (max-width: 767px) {
+  #managementView .kpi-carousel .seg-card { flex-basis: 78%; }
+}
+/* === Segment KPI cards — Migdal Design System: white card, faint tinted header band,
+   status-dot badge with ink-navy text. Tier tokens (amber == restrained gold). === */
+:root {
+  --seg-green-fg: #3f8568; --seg-green-bg: #eef4f0;
+  --seg-gold-fg:  #8f7636; --seg-gold-bg:  #f1ede2;
+  --seg-red-fg:   #b65058; --seg-red-bg:   #f4ebec;
+  --seg-ink:      #020140;
+}
+
+/* Card: clean white, tinted header band only */
+.seg-card { display: flex; flex-direction: column; }
+#managementView .seg-card { background: #fff; padding: 0; border: 1px solid var(--mig-line, #d4ddec); border-radius: var(--r-lg, 16px); box-shadow: var(--sh-2, 0 4px 12px rgba(2,1,64,.08)); overflow: hidden; transition: box-shadow .15s ease, transform .15s ease; }
+#managementView .seg-card:hover { transform: translateY(-2px); box-shadow: var(--sh-3, 0 12px 32px rgba(2,1,64,.10)); }
+#managementView .seg-card-header { display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem; padding: 0.75rem 0.9rem; margin: 0; background: transparent; border-bottom: 1px solid var(--mig-line-soft, #e2e9f3); }
+#managementView .seg-section-list, #managementView .seg-mini-list { padding: 0.85rem 0.9rem; }
+
+/* Selection: ink-navy ring + lift; header gets a tier-colored bottom rail so the
+   color thread starts at the card and continues into the banner (seam fusion). */
+#managementView .seg-card-active { box-shadow: 0 0 0 2px var(--seg-ink,#020140), var(--sh-3,0 12px 32px rgba(2,1,64,.10)); transform: translateY(-1px); position: relative; z-index: 3; }
+#managementView .seg-card-active .seg-card-header { box-shadow: inset 0 -2px 0 0 currentColor; }
+#managementView .seg-card-active .seg-card-header.seg-tint-green { color: var(--seg-green-fg,#3f8568); }
+#managementView .seg-card-active .seg-card-header.seg-tint-amber { color: var(--seg-gold-fg,#8f7636); }
+#managementView .seg-card-active .seg-card-header.seg-tint-red   { color: var(--seg-red-fg,#b65058); }
+#managementView .seg-card-active .seg-card-name { color: var(--seg-ink,#020140); }
+
+.seg-card-name { font-size: 1.15rem; font-weight: 700; color: var(--seg-ink); }
+.seg-section-list { display: flex; flex-direction: column; gap: 0.85rem; }
+.seg-section { display: flex; flex-direction: column; gap: 0.2rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--gray-200, #e5e7eb); }
+.seg-section:last-child { border-bottom: none; padding-bottom: 0; }
+.seg-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+.seg-section-label { font-size: 0.85rem; color: var(--text-strong, #020140); font-weight: 700; }
+.seg-section-value { font-size: 1.25rem; font-weight: 700; color: var(--text-strong, #020140); font-variant-numeric: tabular-nums; line-height: 1.1; }
+
+/* Monochrome icon */
+.seg-card-icon-mono { width: 34px; height: 34px; border-radius: 9px; display:flex; align-items:center; justify-content:center; background: var(--navy-700); flex-shrink:0; }
+.seg-card-icon-mono svg { width: 19px; height: 19px; }
+.seg-card-icon-mono svg * { stroke: #fff !important; fill: none !important; }
+
+/* "עמידה כוללת NN%" canonical Migdal badge: status dot + pale bg + ink RagSans text */
+#managementView .seg-card-score { display:inline-flex; align-items:center; gap:.4rem; margin-top:.1rem; padding:.32rem .75rem; border-radius:var(--r-pill,999px); font-family:var(--font-display,"Migdal RagSans"),sans-serif; font-weight:700; font-size:.92rem; line-height:1.25; color:var(--seg-ink,#020140); }
+#managementView .seg-score-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+#managementView .seg-tint-green .seg-card-score { background:var(--seg-green-bg,#eef4f0); } #managementView .seg-tint-green .seg-score-dot { background:var(--seg-green-fg,#3f8568); }
+#managementView .seg-tint-amber .seg-card-score { background:var(--seg-gold-bg,#f1ede2); }  #managementView .seg-tint-amber .seg-score-dot { background:var(--seg-gold-fg,#8f7636); }
+#managementView .seg-tint-red   .seg-card-score { background:var(--seg-red-bg,#f4ebec); }   #managementView .seg-tint-red   .seg-score-dot { background:var(--seg-red-fg,#b65058); }
+
+/* Total-premium summary anchor — static all-branches headline above the segment grid */
+#managementView .mgmt-total-premium { margin-bottom: 14px; }
+#managementView .mtp-card { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:1rem 2rem;
+  background:rgba(61,101,227,0.08); border:1px solid var(--mig-line,#d4ddec); border-right:4px solid var(--seg-ink,#020140);
+  border-radius:var(--r-xl,24px); box-shadow:var(--sh-3,0 12px 32px rgba(2,1,64,.10)); padding:1.1rem 1.4rem; }
+#managementView .mtp-main { display:flex; flex-direction:column; gap:.2rem; }
+#managementView .mtp-label { font-size:.82rem; font-weight:700; letter-spacing:.01em; color:var(--mig-slate-600,#5b658a); }
+/* Full-width tinted header strip: pale Migdal indigo (--mig-blue #3d65e3 at 8%, matching the
+   existing rgba(61,101,227,..) convention). flex-basis:100% makes it own the top row of the
+   wrapping flex card; negative margins cancel the card padding so the tint sits flush to the
+   top corners. Ink-navy label text keeps brand contrast. */
+#managementView .mgmt-total-premium-header {
+  /* basis = full line + the card's two 1.4rem side paddings, so the negative side margins
+     below stretch (not just shift) the strip flush to both inner edges */
+  flex: 0 0 calc(100% + 2.8rem);
+  margin: -1.1rem -1.4rem 0;
+  padding: .7rem 1.4rem;
+  background: transparent;
+  color: var(--seg-ink,#020140);
+  font-size: .82rem; font-weight: 700; letter-spacing: .01em;
+  border-top-left-radius: var(--r-xl,24px);
+  border-top-right-radius: var(--r-xl,24px);
+}
+#managementView .mtp-big { font-family:var(--font-display,"Migdal RagSans"),sans-serif; font-weight:800; font-size:2.3rem; line-height:1.05; font-variant-numeric:tabular-nums; color:var(--seg-ink,#020140); }
+#managementView .mtp-fields { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem 1.6rem; }
+#managementView .mtp-field { display:flex; flex-direction:column; gap:.2rem; }
+#managementView .mtp-field-label { font-size:.87rem; font-weight:700; color:var(--mig-slate-600,#5b658a); }
+#managementView .mtp-field-value { font-size:1.3rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--seg-ink,#020140); }
+#managementView .mtp-pill { display:inline-flex; align-items:center; gap:.4rem; padding:.32rem .75rem; border-radius:var(--r-pill,999px);
+  font-family:var(--font-display,"Migdal RagSans"),sans-serif; font-weight:700; font-size:1.2rem; line-height:1.25; color:var(--seg-ink,#020140); }
+#managementView .mtp-card.seg-tint-green .mtp-pill { background:var(--seg-green-bg,#eef4f0); } #managementView .mtp-card.seg-tint-green .mtp-pill .seg-score-dot { background:var(--seg-green-fg,#3f8568); }
+#managementView .mtp-card.seg-tint-amber .mtp-pill { background:var(--seg-gold-bg,#f1ede2); }  #managementView .mtp-card.seg-tint-amber .mtp-pill .seg-score-dot { background:var(--seg-gold-fg,#8f7636); }
+#managementView .mtp-card.seg-tint-red   .mtp-pill { background:var(--seg-red-bg,#f4ebec); }   #managementView .mtp-card.seg-tint-red   .mtp-pill .seg-score-dot { background:var(--seg-red-fg,#b65058); }
+
+/* Minimal KPI rows */
+.seg-mini-list { display:flex; flex-direction:column; gap:0.45rem; padding:0 0.2rem; }
+.seg-mini-row { display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--gray-100); padding-bottom:0.4rem; }
+.seg-mini-row:last-child { border-bottom:none; padding-bottom:0; }
+.seg-mini-label { font-size:0.82rem; font-weight:700; color: var(--text-strong, #020140); }
+.seg-mini-value { font-size:1.05rem; font-weight:700; font-variant-numeric:tabular-nums; color: var(--text-strong, #020140); }
+
+#managementView .kpi-stack { position: relative; }
+
+/* Detail banner: emerges from the selected card. Tier top rail + integrated tab notch.
+   overflow:visible so the tab can sit on the top edge; inner wrapper clips content. */
+#managementView .seg-detail-panel { position: relative; margin-top: 14px; background:#fff; border:1px solid var(--mig-line,#d4ddec); border-radius: var(--r-xl,24px); box-shadow: var(--sh-3,0 12px 32px rgba(2,1,64,.10)); overflow: visible; transform-origin: top center; animation: segPanelIn 180ms cubic-bezier(.2,.7,.2,1); }
+@keyframes segPanelIn { from { opacity:0; transform: translateY(-8px) scaleY(.985); } to { opacity:1; transform: translateY(0) scaleY(1); } }
+@media (prefers-reduced-motion: reduce) { #managementView .seg-detail-panel { animation: none; } }
+#managementView .seg-detail-inner { border-radius: inherit; overflow: hidden; }
+#managementView .seg-detail-header { display:flex; align-items:center; gap:.85rem; padding:.9rem 1.25rem; background: transparent; border-bottom:1px solid var(--mig-line-soft,#e2e9f3); }
+#managementView .seg-detail-panel.seg-tint-green { border-top:2px solid var(--seg-green-fg,#3f8568); }
+#managementView .seg-detail-panel.seg-tint-amber { border-top:2px solid var(--seg-gold-fg,#8f7636); }
+#managementView .seg-detail-panel.seg-tint-red   { border-top:2px solid var(--seg-red-fg,#b65058); }
+
+/* Integrated tab notch on the banner top edge, aligned under the selected card. */
+#managementView .seg-detail-tab { position:absolute; top:-9px; width:18px; height:18px; transform: translateX(50%) rotate(45deg); border-radius:4px; background:#fff; z-index:2; display:none; }
+#managementView .seg-detail-panel.seg-tint-green .seg-detail-tab { border-top:2px solid var(--seg-green-fg,#3f8568); border-left:2px solid var(--seg-green-fg,#3f8568); }
+#managementView .seg-detail-panel.seg-tint-amber .seg-detail-tab { border-top:2px solid var(--seg-gold-fg,#8f7636);  border-left:2px solid var(--seg-gold-fg,#8f7636); }
+#managementView .seg-detail-panel.seg-tint-red   .seg-detail-tab { border-top:2px solid var(--seg-red-fg,#b65058);   border-left:2px solid var(--seg-red-fg,#b65058); }
+#managementView .seg-detail-sections { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding: 1.2rem 1.25rem; }
+@media (max-width: 760px) { #managementView .seg-detail-sections { grid-template-columns: 1fr; } }
+.seg-detail-name { font-size: 1.25rem; font-weight: 700; color: var(--seg-ink); }
+#managementView .seg-detail-score { display:inline-flex; align-items:center; gap:.45rem; padding:.34rem .8rem; border-radius:var(--r-pill,999px); font-family:var(--font-display,"Migdal RagSans"),sans-serif; font-weight:700; font-size:1rem; color:var(--seg-ink,#020140); }
+#managementView .seg-tint-green .seg-detail-score { background:var(--seg-green-bg,#eef4f0); } #managementView .seg-tint-green .seg-detail-score .seg-score-dot { background:var(--seg-green-fg,#3f8568); }
+#managementView .seg-tint-amber .seg-detail-score { background:var(--seg-gold-bg,#f1ede2); }  #managementView .seg-tint-amber .seg-detail-score .seg-score-dot { background:var(--seg-gold-fg,#8f7636); }
+#managementView .seg-tint-red   .seg-detail-score { background:var(--seg-red-bg,#f4ebec); }   #managementView .seg-tint-red   .seg-detail-score .seg-score-dot { background:var(--seg-red-fg,#b65058); }
+.seg-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.seg-row span:last-child { font-weight: 600; }
 #managementView .kpi-card {
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
@@ -1731,20 +1875,22 @@
   </div>
 </div>
 
-<!-- Segment label filter — lives OUTSIDE #mainContent so the skeleton cycle never wipes it -->
-<div class="segment-filter-bar">
-  <div class="segment-filter-inner">
-    <span class="segment-filter-caption">ענף:</span>
-    <div class="segment-label-bar" id="branchLabelBar"></div>
-  </div>
-</div>
+<!-- Segment filter removed — the segment KPI cards are now the selector -->
 
 <!-- Main Content -->
 <div class="container" id="mainContent">
   <!-- Scope indicator (only when a segment is selected) -->
   <div class="scope-note" id="scopeNote" style="display:none"></div>
   <!-- KPI Cards -->
-  <div class="kpi-grid" id="kpiGrid"></div>
+  <div class="kpi-stack" id="kpiStack" style="position:relative">
+    <div class="mgmt-total-premium" id="mgmtTotalPremium"></div>
+    <div class="kpi-carousel-wrap">
+      <div class="kpi-carousel" id="kpiCarousel">
+        <div class="kpi-grid" id="kpiGrid"></div>
+      </div>
+    </div>
+    <div class="seg-detail-panel" id="segDetailPanel" style="display:none"></div>
+  </div>
 
   <!-- Trend Chart -->
   <div class="chart-section card" id="chartSection">
@@ -2104,6 +2250,13 @@ function mgmtGetGoalColor(pct) {
   return 'red';
 }
 
+// Segment score = premiums (פרמיות) attainment only, so the card/detail badge matches the
+// card's פרמיות % row exactly. Name kept so all callers (card tint, detail tint, connector
+// tier) keep working unchanged. Returns an integer %.
+function mgmtSegmentCombinedScore(b) {
+  return Math.round(b.salesGoalPct);
+}
+
 // Single source of truth for higher-is-better goal-bar fill coloring (returns a CSS var).
 // Mirrors mgmtGetGoalColor's 100/90 cutoffs so bar fill, % text, and the
 // "אחוז עמידה ביעד" row always agree. (Ratio cards use buildPlanBar — not this.)
@@ -2123,8 +2276,12 @@ const branchIcons = {
 
 const branches = [
   {
-    name: 'רכב', iconSvg: branchIcons.car, colorHex: '#f59e0b', gradientEnd: '#fbbf24',
-    subs: ['20 - חובה (עד 3.5 טון)','25 - מקיף וצד ג (עד 3.5 טון)','20 - חובה (מעל 3.5 טון)','125 - מקיף וצד ג (מעל 3.5 טון)']
+    name: 'רכב חובה', iconSvg: branchIcons.car, colorHex: '#f59e0b', gradientEnd: '#fbbf24',
+    subs: ['20 - חובה (עד 3.5 טון)','20 - חובה (מעל 3.5 טון)']
+  },
+  {
+    name: 'רכב רכוש', iconSvg: branchIcons.car, colorHex: '#f97316', gradientEnd: '#fb923c',
+    subs: ['25 - מקיף וצד ג (עד 3.5 טון)','125 - מקיף וצד ג (מעל 3.5 טון)']
   },
   {
     name: 'דירות', iconSvg: branchIcons.home, colorHex: '#8b5cf6', gradientEnd: '#a78bfa',
@@ -2137,6 +2294,18 @@ const branches = [
   {
     name: 'הנדסי', iconSvg: branchIcons.building, colorHex: '#3b82f6', gradientEnd: '#60a5fa',
     subs: ['63 - צמ"ה','34 - קבלנים']
+  },
+  {
+    name: 'מגל', iconSvg: branchIcons.shield, colorHex: '#0ea5e9', gradientEnd: '#38bdf8',
+    subs: ['410 - מגל פרטי','420 - מגל עסקי']
+  },
+  {
+    name: 'ימי', iconSvg: branchIcons.shield, colorHex: '#14b8a6', gradientEnd: '#2dd4bf',
+    subs: ['510 - מטענים','520 - כלי שיט']
+  },
+  {
+    name: 'אחר', iconSvg: branchIcons.building, colorHex: '#64748b', gradientEnd: '#94a3b8',
+    subs: ['900 - שונות','910 - מיוחדים']
   }
 ];
 
@@ -2301,9 +2470,9 @@ function mgmtGenerateData() {
   trendData.annualPoliciesGoal = annualPoliciesGoal;
 
   // Branch data
-  const branchShares = [0.35, 0.18, 0.32, 0.15];
+  const branchShares = [0.20, 0.15, 0.16, 0.16, 0.10, 0.08, 0.08, 0.07];
   const branchData = branches.map((b, bi) => {
-    const share = branchShares[bi];
+    const share = branchShares[bi] ?? 0.10;
     const branchRng = mgmtSeededRandom(seed + bi * 1000);
     const val = totalSales * share;
     const profVal = totalProfit * share;
@@ -2312,7 +2481,7 @@ function mgmtGenerateData() {
     const prevVal = val / (1 + yoy / 100);
     // UPDATED: deterministic attainment tier per branch under the 100/85 color scheme — green,
     // amber and red are all represented so segments differ (רכב green · דירות amber · בתי עסק & הנדסי red)
-    const goalPctRanges = [[104, 118], [86, 98], [70, 82], [40, 60]];
+    const goalPctRanges = [[104, 118], [108, 120], [86, 98], [70, 82], [40, 60], [102, 114], [88, 96], [55, 72]];
     const [gMin, gMax] = goalPctRanges[bi] || [60, 90];
     const goalPct = gMin + Math.round(branchRng() * (gMax - gMin));
     const polGoalPct = gMin + Math.round(branchRng() * (gMax - gMin));
@@ -2322,10 +2491,11 @@ function mgmtGenerateData() {
 
     // NEW: per-branch profitability KPIs (mock). Tier aligned to bi so colors are deterministic.
     // bi 0 (רכב)=healthy, 1 (דירות)=watch, 2 (בתי עסק)=healthy, 3 (הנדסי)=stressed.
-    const lrBase   = [70, 78, 71, 86][bi] ?? 75;   // Loss Ratio %
-    const crBase   = [98, 101, 99, 105][bi] ?? 100; // Combined Ratio %
-    const retBase  = [86, 81, 87, 76][bi] ?? 83;    // Retention %
-    const renBase  = [78, 72, 80, 68][bi] ?? 75;    // Renewals (חידושים) rate %
+    const lrBase   = [70, 73, 78, 71, 86, 69, 75, 82][bi] ?? 75;   // Loss Ratio %
+    const crBase   = [98, 100, 101, 99, 105, 97, 100, 104][bi] ?? 100; // Combined Ratio %
+    const crPlan   = [96, 97, 98, 97, 100, 95, 98, 101][bi] ?? 97;   // Combined Ratio target (lower=better)
+    const retBase  = [86, 84, 81, 87, 76, 88, 83, 78][bi] ?? 83;    // Retention %
+    const renBase  = [78, 76, 72, 80, 68, 81, 74, 70][bi] ?? 75;    // Renewals (חידושים) rate %
     const lossRatio     = +(lrBase  + (branchRng() - 0.5) * 3).toFixed(1);
     const combinedRatio = +(crBase  + (branchRng() - 0.5) * 3).toFixed(1);
     const retention     = +(retBase + (branchRng() - 0.5) * 3).toFixed(1);
@@ -2375,7 +2545,7 @@ function mgmtGenerateData() {
       ...b, sales: val, profit: profVal, policies: polVal, salesGoal: branchGoal, policiesGoal: polGoal,
       salesGoalPct: goalPct, policiesGoalPct: polGoalPct, yoy, salesPrev: prevVal,
       profitPrev: prevVal * (profVal / val), policiesPrev: Math.round(polVal / (1 + yoy / 100)),
-      lossRatio, combinedRatio, retention, renewalsPct,
+      lossRatio, combinedRatio, combinedRatioPlan: crPlan, retention, renewalsPct,
       share, subs, teams
     };
   });
@@ -2474,28 +2644,117 @@ let mgmtCurrentData = null;
 
 function mgmtRender() {
   mgmtCurrentData = mgmtGenerateData();
+  mgmtRenderTotalPremium();
   mgmtRenderKPIs();
   mgmtRenderChart();
   mgmtRenderBranches();
   mgmtRenderSegmentLabels();
 }
 
+// Static all-branches headline above the segment grid. Aggregates across ALL branchData
+// (never the standalone totalSales var, never the selected segment) so it stays a constant
+// anchor while individual cards/scope change. Mirrors the cards' fields: sales, salesGoal,
+// salesPrev (prev-year), and a value-weighted attainment & YoY derived from those sums.
+function mgmtRenderTotalPremium() {
+  const host = document.getElementById('mgmtTotalPremium');
+  if (!host) return;
+  const branches = (mgmtCurrentData && mgmtCurrentData.branchData) || [];
+  const sumSales = branches.reduce((s, b) => s + (b.sales || 0), 0);
+  const sumGoal  = branches.reduce((s, b) => s + (b.salesGoal || 0), 0);
+  const sumPrev  = branches.reduce((s, b) => s + (b.salesPrev || 0), 0);
+  const attainPct = sumGoal > 0 ? Math.round((sumSales / sumGoal) * 100) : 0;
+  const yoyPct    = sumPrev > 0 ? (sumSales / sumPrev - 1) * 100 : 0;
+  const tier     = mgmtGetGoalColor(attainPct);         // green / amber / red — reuse 100/90 cutoffs
+  const yoyDir   = yoyPct >= 0 ? '▲' : '▼';
+  const yoyColor = yoyPct >= 0 ? 'var(--success)' : 'var(--danger)';
+  host.innerHTML = `
+    <div class="mtp-card seg-tint-${tier}">
+      <div class="mgmt-total-premium-header">סך פרמיות · כל הענפים</div>
+      <div class="mtp-main">
+        <span class="mtp-big">${mgmtFormatCurrency(sumSales)}</span>
+      </div>
+      <div class="mtp-fields">
+        <div class="mtp-field">
+          <span class="mtp-field-label">יעד</span>
+          <span class="mtp-field-value">${mgmtFormatCurrency(sumGoal)}</span>
+        </div>
+        <div class="mtp-field">
+          <span class="mtp-field-label">אחוז עמידה ביעד</span>
+          <span class="mtp-pill"><span class="seg-score-dot"></span>${attainPct}%</span>
+        </div>
+        <div class="mtp-field">
+          <span class="mtp-field-label">מול אשתקד</span>
+          <span class="mtp-field-value" style="color:${yoyColor}">${yoyDir}${Math.abs(yoyPct).toFixed(1)}%</span>
+        </div>
+      </div>
+    </div>`;
+}
+
 // UPDATED: replaced רווחיות card with חידושים; uses mgmtGetGoalColor for 3-tier thresholds
+// Positions the banner's integrated tab notch horizontally under the selected card's
+// center (RTL-safe: distance from the panel's right edge to the card center).
+function mgmtPositionDetailTab() {
+  const grid  = document.getElementById('kpiGrid');
+  const panel = document.getElementById('segDetailPanel');
+  const tab   = document.getElementById('segDetailTab');
+  if (!grid || !panel || !tab) return;
+  if (mgmtState.selectedSegment === null || panel.style.display === 'none') { tab.style.display='none'; return; }
+  const card = grid.querySelector('[data-seg-card="' + mgmtState.selectedSegment + '"]');
+  if (!card) { tab.style.display='none'; return; }
+  const panelRect = panel.getBoundingClientRect();
+  const cardRect  = card.getBoundingClientRect();
+  let cardCenterX = cardRect.left + cardRect.width/2;
+  // Carousel-aware: clamp the notch target to the scroller's visible viewport so it tracks
+  // the selected card while scrolling and parks at the nearest visible edge once the card
+  // scrolls fully out of view (never points off-screen).
+  const carousel = document.getElementById('kpiCarousel');
+  if (carousel) {
+    const cr = carousel.getBoundingClientRect();
+    const pad = 14;
+    cardCenterX = Math.max(cr.left + pad, Math.min(cardCenterX, cr.right - pad));
+  }
+  let rightOffset = panelRect.right - cardCenterX;
+  // Never let the diamond point off the panel itself.
+  const tabHalf = 9;
+  rightOffset = Math.max(tabHalf, Math.min(rightOffset, panelRect.width - tabHalf));
+  tab.style.right = rightOffset + 'px';
+  tab.style.display = 'block';
+}
+
+// Throttled scroll binding on the carousel so the connector notch re-tracks the selected
+// card as it scrolls. Bound once (the carousel element persists across mgmtRenderKPIs).
+function mgmtBindCarouselScroll() {
+  const carousel = document.getElementById('kpiCarousel');
+  if (!carousel || carousel.dataset.scrollBound) return;
+  carousel.dataset.scrollBound = '1';
+  let ticking = false;
+  carousel.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { mgmtPositionDetailTab(); ticking = false; });
+  }, { passive: true });
+}
+
+// Bring the selected segment card into view inside the carousel (respects reduced-motion).
+function mgmtScrollSelectedCardIntoView() {
+  if (mgmtState.selectedSegment === null) return;
+  const grid = document.getElementById('kpiGrid');
+  if (!grid) return;
+  const card = grid.querySelector('[data-seg-card="' + mgmtState.selectedSegment + '"]');
+  if (!card) return;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', inline: 'center', block: 'nearest' });
+  requestAnimationFrame(mgmtPositionDetailTab);
+}
+
 function mgmtRenderKPIs() {
   const { kpis, renewals } = mgmtActiveScope();
   const grid = document.getElementById('kpiGrid');
 
   // Scope indicator above the KPI grid — only when a single segment is selected.
+  // Selection is now indicated by the tinted card itself — no scope title needed.
   const note = document.getElementById('scopeNote');
-  if (note) {
-    if (mgmtState.selectedSegment === null) {
-      note.style.display = 'none';
-      note.textContent = '';
-    } else {
-      note.style.display = '';
-      note.textContent = 'מציג נתונים עבור: ' + mgmtCurrentData.branchData[mgmtState.selectedSegment].name;
-    }
-  }
+  if (note) { note.style.display = 'none'; note.textContent = ''; }
 
   // Goal bar: actual progress toward a goal (higher % = better), with a downward triangle
   // marker at the 100%-of-goal line and a 3-tier fill (≥100 green · 90–99 amber · <90 red).
@@ -2684,12 +2943,133 @@ function mgmtRenderKPIs() {
     </div>
   `;
 
-  grid.innerHTML = buildKpiCard('sales', 'סה"כ מכירות', '$', 'sales', 'highlight-sales') +
-                   buildRetentionCard() +
-                   buildKpiCard('policies', 'כמויות', '#', 'policies', 'highlight-policies') +
-                   buildRatioCard('lossRatio', 'יחס נזק', 'Loss Ratio · נוכחי') +
-                   buildRatioCard('combinedRatio', 'יחס משולב', 'Combined Ratio · נוכחי') +
-                   renewalsCard;
+  // Goal progress bar with a downward triangle marker at the 100%-of-goal line.
+  // TRACK_MAX gives headroom past 100% so the goal line is visible; 3-tier fill.
+  function segGoalBar(goalPct) {
+    const TRACK_MAX = 120;
+    const fill = Math.min(100, (goalPct / TRACK_MAX) * 100);
+    const tick = (100 / TRACK_MAX) * 100;
+    const color = mgmtGoalBarColor(goalPct);
+    return `
+      <div style="margin-top:0.4rem">
+        <div style="position:relative;padding-top:8px">
+          <div style="position:absolute;top:0;right:${tick}%;transform:translateX(50%);width:0;height:0;
+                      border-left:4px solid transparent;border-right:4px solid transparent;
+                      border-top:6px solid var(--navy-800)" title="יעד"></div>
+          <div style="position:relative;height:7px;border-radius:9999px;background:var(--gray-100);overflow:hidden">
+            <div style="width:${fill}%;height:100%;background:${color};border-radius:9999px;transition:width 400ms ease"></div>
+          </div>
+          <div style="position:absolute;top:8px;right:${tick}%;transform:translateX(50%);width:2px;height:7px;
+                      background:var(--navy-800);opacity:0.35;pointer-events:none"></div>
+        </div>
+      </div>`;
+  }
+
+  // Higher-is-better KPI section (פרמיות / כמויות): total · יעד · % עמידה · YoY + bar
+  function segSectionUp(label, value, goal, goalPct, yoy, isCurrency) {
+    const fmt = isCurrency ? mgmtFormatCurrency : mgmtFormatNumber;
+    const goalColor = mgmtGetGoalColor(goalPct);
+    const yoyDir = yoy >= 0 ? '▲' : '▼';
+    const yoyColor = yoy >= 0 ? 'var(--success)' : 'var(--danger)';
+    return `
+      <div class="seg-section">
+        <div class="seg-section-head">
+          <span class="seg-section-label">${label}</span>
+          <span class="seg-section-value">${fmt(value)}</span>
+        </div>
+        <div class="seg-row"><span>יעד</span><span>${fmt(goal)}</span></div>
+        <div class="seg-row"><span>אחוז עמידה ביעד</span><span class="${goalColor}">${goalPct}%</span></div>
+        <div class="seg-row"><span>מול אשתקד</span><span style="color:${yoyColor}">${yoyDir}${Math.abs(yoy).toFixed(0)}%</span></div>
+        ${segGoalBar(goalPct)}
+      </div>`;
+  }
+
+  // Lower-is-better ratio section (רווחיות / Combined Ratio): value · יעד · סטייה · YoY + bar.
+  // Goal attainment for a "lower=better" ratio = plan / actual (≥100% means at/under target).
+  function segSectionRatio(label, value, plan, prevYear) {
+    const variance = value - plan;                      // +pp = worse
+    const vDir = variance > 0 ? '▲' : '▼';
+    const vColor = variance > 0 ? 'var(--danger)' : 'var(--success)';
+    const yoy = value - prevYear;                        // +pp = worse vs last year
+    const yoyDir = yoy > 0 ? '▲' : '▼';
+    const yoyColor = yoy > 0 ? 'var(--danger)' : 'var(--success)';
+    const attainPct = value > 0 ? Math.round((plan / value) * 100) : 0;
+    const attainColor = mgmtGetGoalColor(attainPct);
+    return `
+      <div class="seg-section">
+        <div class="seg-section-head">
+          <span class="seg-section-label">${label}</span>
+          <span class="seg-section-value">${value.toFixed(1)}%</span>
+        </div>
+        <div class="seg-row"><span>יעד</span><span>${plan.toFixed(1)}%</span></div>
+        <div class="seg-row"><span>אחוז עמידה ביעד</span><span class="${attainColor}">${attainPct}%</span></div>
+        <div class="seg-row"><span>מול אשתקד</span><span style="color:${yoyColor}">${yoyDir}${Math.abs(yoy).toFixed(1)}%</span></div>
+        ${segGoalBar(attainPct)}
+      </div>`;
+  }
+
+  // Collapsed segment card: tinted title area (mono icon + name + combined score) and
+  // 3 minimal name+value rows. Full detail lives in #segDetailPanel when selected.
+  function buildSegmentCard(b, idx) {
+    const selected = mgmtState.selectedSegment === idx;
+    const score = mgmtSegmentCombinedScore(b);
+    return `
+      <div class="card kpi-card seg-card fade-in ${selected ? 'seg-card-active' : ''}"
+           data-seg-card="${idx}" role="button" tabindex="0"
+           style="--seg-accent:${b.colorHex};cursor:pointer">
+        <div class="seg-card-header seg-tint-${mgmtGetGoalColor(score)}">
+          <div class="seg-card-icon-mono">${b.iconSvg}</div>
+          <span class="seg-card-name">${b.name}</span>
+          <div style="flex-basis:100%"><span class="seg-card-score"><span class="seg-score-dot"></span>עמידה ביעד ${score}%</span></div>
+        </div>
+        <div class="seg-mini-list">
+          <div class="seg-mini-row"><span class="seg-mini-label">פרמיות</span><span class="seg-mini-value">${mgmtFormatCurrency(b.sales)}</span></div>
+          <div class="seg-mini-row"><span class="seg-mini-label">כמויות</span><span class="seg-mini-value">${mgmtFormatNumber(b.policies)}</span></div>
+          <div class="seg-mini-row"><span class="seg-mini-label">רווחיות</span><span class="seg-mini-value">${b.combinedRatio.toFixed(1)}%</span></div>
+        </div>
+      </div>`;
+  }
+
+  grid.innerHTML = mgmtCurrentData.branchData.map((b, i) => buildSegmentCard(b, i)).join('');
+
+  // Card click → select / deselect that segment (mirrors the old filter pills)
+  grid.querySelectorAll('[data-seg-card]').forEach(card => {
+    const idx = parseInt(card.dataset.segCard, 10);
+    const select = () => mgmtSetSegment(mgmtState.selectedSegment === idx ? null : idx);
+    card.addEventListener('click', select);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); }
+    });
+  });
+
+  // Expanded detail panel: full rich view of the selected segment below the grid.
+  const panel = document.getElementById('segDetailPanel');
+  if (mgmtState.selectedSegment === null) {
+    if (panel) { panel.style.display = 'none'; panel.innerHTML = ''; }
+  } else if (panel) {
+    const b = mgmtCurrentData.branchData[mgmtState.selectedSegment];
+    const score = mgmtSegmentCombinedScore(b);
+    const tier = mgmtGetGoalColor(score);
+    panel.style.display = '';
+    panel.className = 'seg-detail-panel seg-tint-' + tier;
+    panel.innerHTML = `
+      <div class="seg-detail-tab" id="segDetailTab" aria-hidden="true"></div>
+      <div class="seg-detail-inner">
+        <div class="seg-detail-header seg-tint-${tier}">
+          <span class="seg-detail-name">${b.name}</span>
+          <span class="seg-detail-score"><span class="seg-score-dot"></span>עמידה ביעד ${score}%</span>
+        </div>
+        <div class="seg-detail-sections">
+          ${segSectionUp('פרמיות', b.sales, b.salesGoal, b.salesGoalPct, b.yoy, true)}
+          ${segSectionUp('כמויות', b.policies, b.policiesGoal, b.policiesGoalPct, b.yoy, false)}
+          ${segSectionRatio('רווחיות', b.combinedRatio, b.combinedRatioPlan, +(b.combinedRatio - 1.4).toFixed(1))}
+        </div>
+      </div>`;
+  }
+
+  // Position the banner's tab notch under the selected card (defer one frame so
+  // layout has settled and getBoundingClientRect is accurate).
+  requestAnimationFrame(mgmtPositionDetailTab);
 }
 
 function mgmtExternalTooltipHandler(context) {
@@ -2757,15 +3137,122 @@ function mgmtBuildRatioByBranch(metricKey) {
   return { labels, series, refs };
 }
 
+// Builds one cumulative current-year line PER SEGMENT for a volume metric
+// (sales|policies), aggregated to the same monthly/daily buckets the main chart uses.
+// Returns { labels, series:[{name,color,data}] }. Used only in the all-segments view.
+function mgmtBuildSegmentVolumeSeries(metricKey) {
+  const fullTrend = mgmtCurrentData.trendData;
+  const days = fullTrend.days;
+  const { startDate, endDate } = mgmtState;
+  const monthSpan = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth()) + 1;
+  const isMultiMonth = monthSpan > 1;
+
+  // Per-segment daily series via the SAME share-scaling used by mgmtScopeTrendFromBranch,
+  // so each segment line's endpoint ≈ that segment's actual total.
+  const series = mgmtCurrentData.branchData.map(b => {
+    const scoped = mgmtScopeTrendFromBranch(b, fullTrend);
+    const daily = scoped[metricKey].current;
+    let data;
+    if (isMultiMonth) {
+      const buckets = {};
+      days.forEach((d, i) => {
+        const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        if (!buckets[key]) buckets[key] = { year: d.getFullYear(), v: 0 };
+        buckets[key].v += daily[i];
+      });
+      const keys = Object.keys(buckets).sort();
+      let cc = 0, prevYear = null;
+      data = keys.map(k => {
+        const yr = buckets[k].year;
+        if (prevYear !== null && yr !== prevYear) cc = 0;
+        prevYear = yr;
+        cc += buckets[k].v;
+        return Math.round(cc);
+      });
+    } else {
+      let cc = 0;
+      data = days.map((_, i) => { cc += daily[i]; return Math.round(cc); });
+    }
+    return { name: b.name, color: b.colorHex, data };
+  });
+
+  // Shared labels (same logic as the main chart)
+  let labels;
+  if (isMultiMonth) {
+    const seen = [];
+    const keys = [];
+    days.forEach(d => {
+      const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+      if (!keys.includes(key)) { keys.push(key); seen.push(shortMonths[d.getMonth()]); }
+    });
+    labels = seen;
+  } else {
+    labels = days.map(d => d.getDate() + ' ' + shortMonths[d.getMonth()]);
+  }
+  return { labels, series };
+}
+
+// Renders the all-segments multi-line view for a volume metric (sales|policies).
+function mgmtRenderSegmentVolumeChart(metricKey) {
+  const isCurrency = metricKey !== 'policies';
+  const { labels, series } = mgmtBuildSegmentVolumeSeries(metricKey);
+
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  if (mgmtChartInstance) { try { mgmtChartInstance.destroy(); } catch(e){} mgmtChartInstance = null; }
+
+  const datasets = series.map(s => ({
+    label: s.name, data: s.data, borderColor: s.color, backgroundColor: 'transparent',
+    fill: false, tension: 0.4, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5,
+    pointBackgroundColor: s.color, order: 1
+  }));
+
+  // Custom legend = one entry per segment
+  const legendEl = document.querySelector('#chartSection .chart-legend');
+  if (legendEl) {
+    legendEl.innerHTML = series.map(s =>
+      `<div class="legend-item"><span class="legend-dot" style="background:${s.color}"></span> ${s.name}</div>`
+    ).join('');
+  }
+
+  mgmtChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          enabled: true, external: null, rtl: true,
+          callbacks: {
+            label: (c) => `${c.dataset.label}: ${isCurrency ? mgmtFormatCurrency(c.parsed.y) : mgmtFormatNumber(c.parsed.y)}`
+          }
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },
+        y: { grid: { color: '#f0f0f0' }, ticks: { font: { family: 'Heebo', size: 11 },
+          callback: (v) => isCurrency ? mgmtFormatCurrency(v) : mgmtFormatNumber(v) } }
+      }
+    }
+  });
+}
+
 function mgmtRenderChart() {
   const metric = mgmtState.chartMetric || mgmtState.activeMetric;
-  // Ratio metrics use a dedicated branch-line renderer
+  // Ratio metric (CLR) uses the per-branch ratio renderer (handles both
+  // all-segments and single-segment internally).
   if (metric === 'lossRatio' || metric === 'combinedRatio') {
     mgmtRenderRatioChart(metric);
     return;
   }
-  if (metric === 'retention') { mgmtRenderRetentionChart(); return; }
-  if (metric === 'renewals')  { mgmtRenderRenewalsChart();  return; }
+  // Volume metrics (sales|policies): when NO segment is selected, draw one
+  // cumulative line per segment. When a segment IS selected, fall through to the
+  // existing scoped current/prev/target 3-line view below.
+  if (mgmtState.selectedSegment === null && (metric === 'sales' || metric === 'policies')) {
+    mgmtRenderSegmentVolumeChart(metric);
+    return;
+  }
   const { trendData } = mgmtActiveScope();
   const metricKey = metric === 'policies' ? 'policies' : 'sales';
   const data = trendData[metricKey];
@@ -2807,6 +3294,15 @@ function mgmtRenderChart() {
     chartPrev    = days.map((_, i) => { cp += data.prev[i];    return Math.round(cp); });
     chartGoal    = days.map((_, i) => { cg += data.goal[i];    return Math.round(cg); });
     chartLabels  = days.map(d => d.getDate() + ' ' + shortMonths[d.getMonth()]);
+  }
+
+  // Restore the standard 3-line legend (segment/ratio renderers overwrite it)
+  const legendEl3 = document.querySelector('#chartSection .chart-legend');
+  if (legendEl3) {
+    legendEl3.innerHTML =
+      '<div class="legend-item"><span class="legend-dot" style="background:var(--chart-blue)"></span> שנה נוכחית</div>' +
+      '<div class="legend-item"><span class="legend-dot" style="background:var(--chart-blue-light)"></span> שנה קודמת</div>' +
+      '<div class="legend-item"><span class="legend-dot" style="background:var(--warning)"></span> יעד חודשי מצטבר</div>';
   }
 
   const ctx = document.getElementById('trendChart').getContext('2d');
@@ -3077,13 +3573,13 @@ function mgmtRenderMetricTabs(containerId, activeMetric, onChange) {
     { key: 'sales', label: 'מכירות' },
     { key: 'policies', label: 'כמויות' }
   ];
+  // chartTabs: מכירות + יחס משולב ONLY (כמויות/policies removed from the chart). Other
+  // callers (branchMetricTabs) keep baseTabs untouched.
   const tabs = (containerId === 'chartTabs')
-    ? baseTabs.concat([
-        { key: 'retention', label: 'שימור' },
-        { key: 'lossRatio', label: 'יחס נזק' },
-        { key: 'combinedRatio', label: 'יחס משולב' },
-        { key: 'renewals', label: 'חידושים' }
-      ])
+    ? [
+        { key: 'sales', label: 'מכירות' },
+        { key: 'combinedRatio', label: 'יחס משולב (CLR)' }
+      ]
     : baseTabs;
   container.innerHTML = tabs.map(t =>
     `<button class="pill-primary ${activeMetric === t.key ? 'active' : ''}" data-metric="${t.key}">${t.label}</button>`
@@ -3119,6 +3615,8 @@ function mgmtRenderViewTabs() {
 
 // NEW: single-select segment (ענף) label bar — "הכל" + one pill per branch
 function mgmtRenderSegmentLabels() {
+  // Segment filter bar removed — selection now happens via the segment KPI cards.
+  return;
   const bar = document.getElementById('branchLabelBar');
   if (!bar) return;
   const { branchData } = mgmtCurrentData;
@@ -3142,6 +3640,8 @@ function mgmtSetSegment(seg) {
   // when a specific segment is chosen, pre-expand its row; "הכל" expands nothing
   mgmtState.expandedBranch = seg;
   mgmtRender();
+  // carousel: bring the chosen card into view (and re-track the notch after it settles)
+  mgmtScrollSelectedCardIntoView();
 }
 
 function mgmtSetActiveMetric(metric) {
@@ -3452,7 +3952,15 @@ function mgmtShowSkeleton() {
 function mgmtHideSkeleton() {
   document.getElementById('mainContent').innerHTML = `
     <div class="scope-note" id="scopeNote" style="display:none"></div>
-    <div class="kpi-grid" id="kpiGrid"></div>
+    <div class="kpi-stack" id="kpiStack" style="position:relative">
+      <div class="mgmt-total-premium" id="mgmtTotalPremium"></div>
+      <div class="kpi-carousel-wrap">
+        <div class="kpi-carousel" id="kpiCarousel">
+          <div class="kpi-grid" id="kpiGrid"></div>
+        </div>
+      </div>
+      <div class="seg-detail-panel" id="segDetailPanel" style="display:none"></div>
+    </div>
     <div class="chart-section card" id="chartSection">
       <div class="chart-header">
         <span class="chart-title">מגמת מכירות וכמויות</span>
@@ -3480,19 +3988,27 @@ function mgmtHideSkeleton() {
   mgmtRenderMetricTabs('chartTabs', mgmtState.activeMetric, mgmtSetActiveMetric);
   mgmtRenderMetricTabs('branchMetricTabs', mgmtState.activeMetric, mgmtSetActiveMetric);
   mgmtRenderViewTabs();
+  // carousel persists across re-renders — bind its scroll→notch tracking once
+  mgmtBindCarouselScroll();
 }
 
 // ==================== INIT ====================
 function mgmtInit() {
   // NEW: coerce any legacy profit metric to sales (profit tab removed)
   if (mgmtState.activeMetric === 'profit') mgmtState.activeMetric = 'sales';
+  // policies tab removed from the chart — coerce a stale chartMetric so the chart can't load
+  // in a dead state pointing at a tab that no longer exists.
+  if (mgmtState.chartMetric === 'policies') mgmtState.chartMetric = 'sales';
 
   document.getElementById('headerDate').textContent = 'עדכון אחרון: ' + mgmtFormatDateHebrew(mgmtToday);
   mgmtRenderAlerts();
   mgmtUpdateDateInputs();
 
   // NEW: resize listener so chart redraws correctly after layout shifts
-  window.addEventListener('resize', () => { if (mgmtChartInstance) mgmtChartInstance.resize(); });
+  window.addEventListener('resize', () => {
+    if (mgmtChartInstance) mgmtChartInstance.resize();
+    mgmtPositionDetailTab();
+  });
 
   // Initial skeleton then load
   mgmtShowSkeleton();
