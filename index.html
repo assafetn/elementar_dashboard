@@ -554,6 +554,55 @@
   border-color: var(--primary);
 }
 
+/* ===== צוותי מכירה multi-select (management, top block only) ===== */
+.mgmt-team-filter { position: relative; display: inline-flex; }
+.mgmt-team-trigger { gap: 0.5rem; }
+.mgmt-team-trigger-label { color: var(--text-muted); font-weight: 500; }
+.mgmt-team-trigger-value { font-weight: 700; }
+.mgmt-team-chevron { transition: transform 180ms var(--ease-out, ease); }
+.mgmt-team-filter.open .mgmt-team-chevron { transform: rotate(180deg); }
+.mgmt-team-trigger.is-filtered {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+.mgmt-team-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;                     /* RTL: align to the trigger's right edge */
+  z-index: 60;                  /* above .date-filter-bar (z-index 40) */
+  min-width: 230px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm), 0 8px 24px rgba(2,1,64,0.10);
+  padding: 0.5rem;
+}
+.mgmt-team-panel[hidden] { display: none; }
+.mgmt-team-panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.75rem; padding: 0.25rem 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--border); margin-bottom: 0.35rem;
+}
+.mgmt-team-panel-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+.mgmt-team-linkbtn {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font-family: inherit; font-size: 0.75rem; font-weight: 600; color: var(--primary);
+}
+.mgmt-team-linkbtn:hover { text-decoration: underline; }
+.mgmt-team-option {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.45rem 0.4rem; border-radius: 8px; cursor: pointer;
+  font-size: 0.875rem; color: var(--text-primary);
+}
+.mgmt-team-option:hover { background: #f3f4f6; }
+.mgmt-team-option input { accent-color: var(--primary); cursor: pointer; margin: 0; }
+.mgmt-team-option.is-locked { opacity: 0.55; cursor: not-allowed; }
+.mgmt-team-option.is-locked input { cursor: not-allowed; }
+.mgmt-team-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+@media (max-width: 767px) {
+  .mgmt-team-panel { right: auto; left: 0; min-width: 200px; }
+}
+
 /* Card base */
 #managementView .card {
   box-shadow: var(--shadow-sm);
@@ -1871,6 +1920,26 @@
       <div class="date-separator"></div>
       <button class="pill-btn active" id="mtdBtn" onclick="mgmtSetMTD()">חודש נוכחי (MTD)</button>
       <button class="pill-btn" id="ytdBtn" onclick="mgmtSetYTD()">שנה נוכחית (YTD)</button>
+      <div class="date-separator"></div>
+      <!-- צוותי מכירה multi-select — scopes ONLY the top block (סך פרמיות · כרטיסיות ענף · מגמת מכירות) -->
+      <div class="mgmt-team-filter" id="mgmtTeamFilter">
+        <button type="button" class="pill-btn mgmt-team-trigger" id="mgmtTeamTrigger"
+                aria-haspopup="listbox" aria-expanded="false">
+          <span class="mgmt-team-trigger-label">צוותי מכירה</span>
+          <span class="mgmt-team-trigger-value" id="mgmtTeamTriggerValue">הכל</span>
+          <svg class="mgmt-team-chevron" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+            <path d="M1 3 L5 7 L9 3" fill="none" stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="mgmt-team-panel" id="mgmtTeamPanel" role="listbox" aria-multiselectable="true" hidden>
+          <div class="mgmt-team-panel-head">
+            <span class="mgmt-team-panel-title">סגמנט סוכן</span>
+            <button type="button" class="mgmt-team-linkbtn" id="mgmtTeamSelectAll">בחר הכל</button>
+          </div>
+          <div class="mgmt-team-options" id="mgmtTeamOptions"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2188,7 +2257,9 @@ const mgmtState = {
   expandedBranch: null,
   selectedSegment: null,   // null = "הכל" (combined). Otherwise a branch index (0..n-1).
   viewMode: 'products',
-  alertsOpen: false
+  alertsOpen: false,
+  selectedTeams: ['צמיחה','שיפור','בסיס','פוטנציאל לאדום'],  // multi-select צוותי מכירה filter; all 4 = unfiltered
+  teamFilterOpen: false
 };
 
 // ==================== SEEDED RANDOM ====================
@@ -2626,7 +2697,7 @@ function mgmtScopeRenewalsFromBranch(b, fullRenewals) {
 // null selectedSegment => full division rollup (kpis/trendData as generated)
 // a segment index      => that branch's KPI + trend slice
 function mgmtActiveScope() {
-  const d = mgmtCurrentData;
+  const d = mgmtFilteredData || mgmtCurrentData;
   if (mgmtState.selectedSegment === null) {
     return { kpis: d.kpis, trendData: d.trendData, renewals: d.renewals };
   }
@@ -2642,8 +2713,96 @@ function mgmtActiveScope() {
 let mgmtChartInstance = null;
 let mgmtCurrentData = null;
 
+// Team-filtered projection of mgmtCurrentData. Consumed ONLY by the top block
+// (total-premium strip, segment cards, volume trend chart). mgmtRenderBranches()
+// and the ratio charts keep reading mgmtCurrentData so the lower breakdown and the
+// ratio metrics stay at full division scope.
+let mgmtFilteredData = null;
+
+// Returns the aggregate share of the currently selected teams (teamGroups shares sum to 1.00).
+function mgmtTeamFactor() {
+  return teamGroups
+    .filter(t => mgmtState.selectedTeams.includes(t.name))
+    .reduce((s, t) => s + t.share, 0);
+}
+
+function mgmtTeamsAllSelected() {
+  return mgmtState.selectedTeams.length >= teamGroups.length;
+}
+
+// Projects a generated data object onto the selected סגמנטי מכירה.
+// Branch volume fields are re-aggregated from b.teams[] (exact, not scaled).
+// Division kpis / trendData / renewals are scaled by the aggregate team share,
+// which is mathematically identical because every branch uses the same team shares.
+// Ratio metrics (lossRatio, combinedRatio, retention, renewalsPct) are NOT filtered —
+// the mock carries no per-team ratio data. Replace this when real actuarial data lands.
+function mgmtApplyTeamFilter(data) {
+  if (!data) return data;
+  if (mgmtTeamsAllSelected()) return data;            // identity fast-path — zero risk when unfiltered
+  const sel = new Set(mgmtState.selectedTeams);
+  const f = mgmtTeamFactor();
+  const branchData = data.branchData.map(b => {
+    const picked = (b.teams || []).filter(t => sel.has(t.name));
+    const sum = k => picked.reduce((s, t) => s + (t[k] || 0), 0);
+    const sales        = sum('sales');
+    const profit       = sum('profit');
+    const policies     = sum('policies');
+    const salesGoal    = sum('salesGoal');
+    const policiesGoal = sum('policiesGoal');
+    const salesPrev    = sum('salesPrev');
+    const profitPrev   = sum('profitPrev');
+    const policiesPrev = sum('policiesPrev');
+    return {
+      ...b,
+      sales, profit, policies, salesGoal, policiesGoal, salesPrev, profitPrev, policiesPrev,
+      salesGoalPct:    salesGoal    > 0 ? Math.round((sales / salesGoal) * 100)       : 0,
+      policiesGoalPct: policiesGoal > 0 ? Math.round((policies / policiesGoal) * 100) : 0,
+      yoy:             salesPrev    > 0 ? (sales / salesPrev - 1) * 100               : 0,
+      teams: picked   // keep only the selected teams so any downstream reader stays consistent
+      // lossRatio / combinedRatio / combinedRatioPlan / retention / renewalsPct intentionally untouched
+    };
+  });
+  // share = portion of the filtered total, so mgmtScopeTrendFromBranch keeps working unchanged
+  const totalSales = branchData.reduce((s, b) => s + b.sales, 0);
+  branchData.forEach(b => { b.share = totalSales > 0 ? b.sales / totalSales : 0; });
+  const k = data.kpis;
+  const kpis = {
+    ...k,
+    sales:    { ...k.sales,    value: k.sales.value    * f, goal: k.sales.goal    * f, prev: k.sales.prev    * f },
+    profit:   { ...k.profit,   value: k.profit.value   * f,                            prev: k.profit.prev   * f },
+    policies: { ...k.policies, value: Math.round(k.policies.value * f),
+                               goal:  Math.round(k.policies.goal  * f),
+                               prev:  Math.round(k.policies.prev  * f) }
+    // lossRatio / combinedRatio / retention pass through from the spread — not team-scoped
+  };
+  const t = data.trendData;
+  const trendData = { days: t.days };
+  ['sales','policies','profit'].forEach(key => {
+    if (!t[key]) return;
+    trendData[key] = {
+      current: t[key].current.map(v => v * f),
+      prev:    t[key].prev.map(v => v * f),
+      goal:    t[key].goal ? t[key].goal.map(v => v * f) : t[key].goal
+    };
+  });
+  trendData.annualSalesGoal    = (t.annualSalesGoal    || 0) * f;
+  trendData.annualPoliciesGoal = (t.annualPoliciesGoal || 0) * f;
+  const r = data.renewals;
+  const renewed     = Math.round(r.renewed * f);
+  const newPolicies = Math.round(r.newPolicies * f);
+  const renewedGoal = Math.round(r.renewedGoal * f);
+  const renewals = {
+    ...r, renewed, newPolicies, renewedGoal,
+    renewedPrev: Math.round(r.renewedPrev * f),
+    newPrev:     Math.round(r.newPrev * f),
+    renewedGoalPct: renewedGoal > 0 ? Math.round((renewed / renewedGoal) * 100) : 0
+  };
+  return { ...data, branchData, kpis, trendData, renewals };
+}
+
 function mgmtRender() {
   mgmtCurrentData = mgmtGenerateData();
+  mgmtFilteredData = mgmtApplyTeamFilter(mgmtCurrentData);
   mgmtRenderTotalPremium();
   mgmtRenderKPIs();
   mgmtRenderChart();
@@ -2658,7 +2817,7 @@ function mgmtRender() {
 function mgmtRenderTotalPremium() {
   const host = document.getElementById('mgmtTotalPremium');
   if (!host) return;
-  const branches = (mgmtCurrentData && mgmtCurrentData.branchData) || [];
+  const branches = (mgmtFilteredData && mgmtFilteredData.branchData) || [];
   const sumSales = branches.reduce((s, b) => s + (b.sales || 0), 0);
   const sumGoal  = branches.reduce((s, b) => s + (b.salesGoal || 0), 0);
   const sumPrev  = branches.reduce((s, b) => s + (b.salesPrev || 0), 0);
@@ -3030,7 +3189,7 @@ function mgmtRenderKPIs() {
       </div>`;
   }
 
-  grid.innerHTML = mgmtCurrentData.branchData.map((b, i) => buildSegmentCard(b, i)).join('');
+  grid.innerHTML = mgmtFilteredData.branchData.map((b, i) => buildSegmentCard(b, i)).join('');
 
   // Card click → select / deselect that segment (mirrors the old filter pills)
   grid.querySelectorAll('[data-seg-card]').forEach(card => {
@@ -3047,7 +3206,7 @@ function mgmtRenderKPIs() {
   if (mgmtState.selectedSegment === null) {
     if (panel) { panel.style.display = 'none'; panel.innerHTML = ''; }
   } else if (panel) {
-    const b = mgmtCurrentData.branchData[mgmtState.selectedSegment];
+    const b = mgmtFilteredData.branchData[mgmtState.selectedSegment];
     const score = mgmtSegmentCombinedScore(b);
     const tier = mgmtGetGoalColor(score);
     panel.style.display = '';
@@ -3141,7 +3300,7 @@ function mgmtBuildRatioByBranch(metricKey) {
 // (sales|policies), aggregated to the same monthly/daily buckets the main chart uses.
 // Returns { labels, series:[{name,color,data}] }. Used only in the all-segments view.
 function mgmtBuildSegmentVolumeSeries(metricKey) {
-  const fullTrend = mgmtCurrentData.trendData;
+  const fullTrend = mgmtFilteredData.trendData;
   const days = fullTrend.days;
   const { startDate, endDate } = mgmtState;
   const monthSpan = (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth()) + 1;
@@ -3149,7 +3308,7 @@ function mgmtBuildSegmentVolumeSeries(metricKey) {
 
   // Per-segment daily series via the SAME share-scaling used by mgmtScopeTrendFromBranch,
   // so each segment line's endpoint ≈ that segment's actual total.
-  const series = mgmtCurrentData.branchData.map(b => {
+  const series = mgmtFilteredData.branchData.map(b => {
     const scoped = mgmtScopeTrendFromBranch(b, fullTrend);
     const daily = scoped[metricKey].current;
     let data;
@@ -3635,6 +3794,96 @@ function mgmtRenderSegmentLabels() {
   });
 }
 
+// ==================== TEAM (סגמנט סוכן) FILTER ====================
+function mgmtRenderTeamFilter() {
+  const opts    = document.getElementById('mgmtTeamOptions');
+  const valueEl = document.getElementById('mgmtTeamTriggerValue');
+  const trigger = document.getElementById('mgmtTeamTrigger');
+  if (!opts || !valueEl || !trigger) return;
+  const sel    = mgmtState.selectedTeams;
+  const isLast = sel.length === 1;   // never allow an empty selection
+  opts.innerHTML = teamGroups.map(t => {
+    const on = sel.includes(t.name);
+    const locked = on && isLast;
+    return `
+      <label class="mgmt-team-option ${locked ? 'is-locked' : ''}" role="option" aria-selected="${on}">
+        <input type="checkbox" data-team="${t.name}" ${on ? 'checked' : ''} ${locked ? 'disabled' : ''}>
+        <span class="mgmt-team-dot" style="background:${t.color}"></span>
+        <span>${t.name}</span>
+      </label>`;
+  }).join('');
+  opts.querySelectorAll('input[data-team]').forEach(cb => {
+    cb.addEventListener('change', () => mgmtToggleTeam(cb.dataset.team));
+  });
+  valueEl.textContent = mgmtTeamsAllSelected()
+    ? 'הכל'
+    : (sel.length === 1 ? sel[0] : sel.length + ' נבחרו');
+  trigger.classList.toggle('is-filtered', !mgmtTeamsAllSelected());
+}
+
+function mgmtToggleTeam(name) {
+  const sel = mgmtState.selectedTeams;
+  const i = sel.indexOf(name);
+  if (i === -1) {
+    // keep teamGroups order so the summary label reads consistently
+    mgmtState.selectedTeams = teamGroups.filter(t => sel.includes(t.name) || t.name === name).map(t => t.name);
+  } else {
+    if (sel.length === 1) return;   // guard: at least one team must stay selected
+    sel.splice(i, 1);
+  }
+  mgmtRenderTeamFilter();
+  mgmtApplyTeamScope();
+}
+
+function mgmtSelectAllTeams() {
+  mgmtState.selectedTeams = teamGroups.map(t => t.name);
+  mgmtRenderTeamFilter();
+  mgmtApplyTeamScope();
+}
+
+// Re-projects and repaints ONLY the top block. No skeleton, no data regeneration —
+// mgmtGenerateData() is date-seeded and unchanged by this filter.
+function mgmtApplyTeamScope() {
+  if (!mgmtCurrentData) return;
+  mgmtFilteredData = mgmtApplyTeamFilter(mgmtCurrentData);
+  mgmtRenderTotalPremium();
+  mgmtRenderKPIs();
+  mgmtRenderChart();
+}
+
+function mgmtSetTeamFilterOpen(open) {
+  const wrap    = document.getElementById('mgmtTeamFilter');
+  const panel   = document.getElementById('mgmtTeamPanel');
+  const trigger = document.getElementById('mgmtTeamTrigger');
+  if (!wrap || !panel || !trigger) return;
+  mgmtState.teamFilterOpen = open;
+  panel.hidden = !open;
+  wrap.classList.toggle('open', open);
+  trigger.setAttribute('aria-expanded', String(open));
+}
+
+function mgmtBindTeamFilter() {
+  const trigger   = document.getElementById('mgmtTeamTrigger');
+  const selectAll = document.getElementById('mgmtTeamSelectAll');
+  const wrap      = document.getElementById('mgmtTeamFilter');
+  if (!trigger || !wrap) return;
+  trigger.addEventListener('click', e => {
+    e.stopPropagation();
+    mgmtSetTeamFilterOpen(!mgmtState.teamFilterOpen);
+  });
+  if (selectAll) selectAll.addEventListener('click', mgmtSelectAllTeams);
+  document.addEventListener('click', e => {
+    if (mgmtState.teamFilterOpen && !wrap.contains(e.target)) mgmtSetTeamFilterOpen(false);
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && mgmtState.teamFilterOpen) {
+      mgmtSetTeamFilterOpen(false);
+      trigger.focus();
+    }
+  });
+  mgmtRenderTeamFilter();
+}
+
 function mgmtSetSegment(seg) {
   mgmtState.selectedSegment = seg;
   // when a specific segment is chosen, pre-expand its row; "הכל" expands nothing
@@ -4003,6 +4252,7 @@ function mgmtInit() {
   document.getElementById('headerDate').textContent = 'עדכון אחרון: ' + mgmtFormatDateHebrew(mgmtToday);
   mgmtRenderAlerts();
   mgmtUpdateDateInputs();
+  mgmtBindTeamFilter();
 
   // NEW: resize listener so chart redraws correctly after layout shifts
   window.addEventListener('resize', () => {
