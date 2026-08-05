@@ -745,7 +745,7 @@
 
 /* Detail banner: emerges from the selected card. Tier top rail + integrated tab notch.
    overflow:visible so the tab can sit on the top edge; inner wrapper clips content. */
-#managementView .seg-detail-panel { position: relative; margin-top: 14px; background:#fff; border:1px solid var(--mig-line,#d4ddec); border-radius: var(--r-xl,24px); box-shadow: var(--sh-3,0 12px 32px rgba(2,1,64,.10)); overflow: visible; transform-origin: top center; animation: segPanelIn 180ms cubic-bezier(.2,.7,.2,1); }
+#managementView .seg-detail-panel { position: relative; margin: 14px auto 0; max-width: 780px; background:#fff; border:1px solid var(--mig-line,#d4ddec); border-radius: var(--r-xl,24px); box-shadow: var(--sh-3,0 12px 32px rgba(2,1,64,.10)); overflow: visible; transform-origin: top center; animation: segPanelIn 180ms cubic-bezier(.2,.7,.2,1); }
 @keyframes segPanelIn { from { opacity:0; transform: translateY(-8px) scaleY(.985); } to { opacity:1; transform: translateY(0) scaleY(1); } }
 @media (prefers-reduced-motion: reduce) { #managementView .seg-detail-panel { animation: none; } }
 #managementView .seg-detail-inner { border-radius: inherit; overflow: hidden; }
@@ -800,7 +800,7 @@
 @media (max-width: 760px) {
   #managementView .seg-ch-tabs { padding: 0.7rem 1rem 0; }
 }
-#managementView .seg-detail-sections { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding: 1.2rem 1.25rem; }
+#managementView .seg-detail-sections { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; padding: 1.2rem 1.25rem; }
 @media (max-width: 760px) { #managementView .seg-detail-sections { grid-template-columns: 1fr; } }
 .seg-detail-name { font-size: 1.25rem; font-weight: 700; color: var(--seg-ink); }
 #managementView .seg-detail-score { display:inline-flex; align-items:center; gap:.45rem; padding:.34rem .8rem; border-radius:var(--r-pill,999px); font-family:var(--font-display,"Migdal RagSans"),sans-serif; font-weight:700; font-size:1rem; color:var(--seg-ink,#020140); }
@@ -2033,7 +2033,7 @@
   <!-- Trend Chart -->
   <div class="chart-section card" id="chartSection">
     <div class="chart-header">
-      <span class="chart-title">מגמת פרמיות וכמויות</span>
+      <span class="chart-title">מגמת פרמיות ורווחיות</span>
       <div class="chart-tabs" id="chartTabs"></div>
     </div>
     <div class="chart-legend">
@@ -3355,7 +3355,6 @@ function mgmtRenderKPIs() {
         <div class="seg-detail-sections">
           ${segSectionUp('פרמיות', b.sales, b.salesGoal, b.salesGoalPct, b.yoy, true)}
           ${segSectionUp('כמויות', b.policies, b.policiesGoal, b.policiesGoalPct, b.yoy, false)}
-          ${segSectionRatio('רווחיות', b.combinedRatio, b.combinedRatioPlan, +(b.combinedRatio - 1.4).toFixed(1))}
         </div>
       </div>`;
   }
@@ -3712,11 +3711,6 @@ function mgmtRenderRatioChart(metricKey) {
     pointBackgroundColor: s.color, order: 1
   }));
   branchDatasets.push({
-    label: 'יעד', data: labels.map(() => refs.plan), borderColor: '#0C1D58',
-    borderDash: [6,4], fill: false, tension: 0, borderWidth: 1.5, pointRadius: 0,
-    pointHoverRadius: 0, order: 2
-  });
-  branchDatasets.push({
     label: 'סף סיכון', data: labels.map(() => refs.danger), borderColor: '#B91C1C',
     borderDash: [6,4], fill: false, tension: 0, borderWidth: 1.5, pointRadius: 0,
     pointHoverRadius: 0, order: 3
@@ -3727,7 +3721,6 @@ function mgmtRenderRatioChart(metricKey) {
   if (legendEl) {
     legendEl.innerHTML =
       series.map(s => `<div class="legend-item"><span class="legend-dot" style="background:${s.color}"></span> ${s.name}</div>`).join('') +
-      `<div class="legend-item"><span class="legend-dot" style="background:#0C1D58"></span> יעד (${refs.plan}%)</div>` +
       `<div class="legend-item"><span class="legend-dot" style="background:#B91C1C"></span> סף סיכון (${refs.danger}%)</div>`;
   }
 
@@ -4358,7 +4351,7 @@ function mgmtHideSkeleton() {
     </div>
     <div class="chart-section card" id="chartSection">
       <div class="chart-header">
-        <span class="chart-title">מגמת פרמיות וכמויות</span>
+        <span class="chart-title">מגמת פרמיות ורווחיות</span>
         <div class="chart-tabs" id="chartTabs"></div>
       </div>
       <div class="chart-legend">
